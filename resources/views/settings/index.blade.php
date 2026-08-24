@@ -134,7 +134,7 @@
                 </div>
             </div>
 
-            {{-- Right Column: Logo & System --}}
+            {{-- Right Column: Logo, Branding Colors & System --}}
             <div class="space-y-6">
                 
                 {{-- Gym Logo --}}
@@ -156,6 +156,91 @@
                             <input type="file" name="gym_logo" class="hidden" accept="image/*">
                         </label>
                         <p class="text-xs text-gray-500 mt-2 text-center">Max size 2MB. JPG, PNG, or GIF.</p>
+                    </div>
+                </div>
+
+                {{-- Branding Colors --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="palette" class="w-5 h-5 text-gray-400"></i> Branding Colors
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">
+                        Colors used in the sidebar gym name and accent elements.
+                    </p>
+
+                    <div class="space-y-4">
+                        {{-- Primary Color --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+                            <div class="flex items-center gap-3">
+                                <input type="color"
+                                       id="primary_color_picker"
+                                       name="primary_color"
+                                       value="{{ old('primary_color', $settings->primary_color ?? '#22C55E') }}"
+                                       class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white"
+                                       oninput="document.getElementById('primary_color_hex').textContent = this.value">
+                                <div class="flex-1 flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl">
+                                    <span class="w-4 h-4 rounded-full border border-gray-200 flex-shrink-0"
+                                          id="primary_color_swatch"
+                                          style="background-color: {{ old('primary_color', $settings->primary_color ?? '#22C55E') }};"></span>
+                                    <code id="primary_color_hex" class="text-sm text-gray-600 font-mono">{{ old('primary_color', $settings->primary_color ?? '#22C55E') }}</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Secondary Color --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
+                            <div class="flex items-center gap-3">
+                                <input type="color"
+                                       id="secondary_color_picker"
+                                       name="secondary_color"
+                                       value="{{ old('secondary_color', $settings->secondary_color ?? '#16A34A') }}"
+                                       class="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white"
+                                       oninput="document.getElementById('secondary_color_hex').textContent = this.value">
+                                <div class="flex-1 flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl">
+                                    <span class="w-4 h-4 rounded-full border border-gray-200 flex-shrink-0"
+                                          id="secondary_color_swatch"
+                                          style="background-color: {{ old('secondary_color', $settings->secondary_color ?? '#16A34A') }};"></span>
+                                    <code id="secondary_color_hex" class="text-sm text-gray-600 font-mono">{{ old('secondary_color', $settings->secondary_color ?? '#16A34A') }}</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Brand Split Position --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Color Split Position</label>
+                            <input type="number"
+                                   id="brand_split_position"
+                                   name="brand_split_position"
+                                   min="0"
+                                   value="{{ old('brand_split_position', $settings->brand_split_position ?? '') }}"
+                                   class="w-20 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                                   placeholder="e.g. 4">
+                            <p class="text-xs text-gray-500 mt-2 leading-relaxed">
+                                Characters for primary color. Leave empty for default.
+                            </p>
+                        </div>
+
+                        {{-- Live preview --}}
+                        <div class="mt-3 p-3 bg-slate-800 rounded-xl flex items-center gap-2">
+                            <span class="text-xs text-slate-400 mr-1">Preview:</span>
+                            <span id="preview_gym_name" class="text-base font-bold whitespace-pre">
+                                @php
+                                    $gymNamePreview = $settings->gym_name ?? 'WarmUp';
+                                    $splitPosPreview = $settings->brand_split_position;
+                                    if (is_null($splitPosPreview)) {
+                                        $splitPosPreview = strpos($gymNamePreview, ' ') !== false ? strpos($gymNamePreview, ' ') : (strtolower($gymNamePreview) === 'warmup' ? 4 : mb_strlen($gymNamePreview));
+                                    }
+                                    $firstPartPreview = mb_substr($gymNamePreview, 0, $splitPosPreview);
+                                    $secondPartPreview = mb_substr($gymNamePreview, $splitPosPreview);
+                                    
+                                    $primary   = $settings->primary_color ?? '#22C55E';
+                                    $secondary = $settings->secondary_color ?? '#16A34A';
+                                @endphp
+                                <span style="color: {{ $primary }};">{{ $firstPartPreview }}</span>@if(mb_strlen($secondPartPreview) > 0)<span style="color: {{ $secondary }};">{{ $secondPartPreview }}</span>@endif
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -193,4 +278,51 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+    // Keep the swatch dots in sync with the colour pickers
+    document.getElementById('primary_color_picker').addEventListener('input', function () {
+        document.getElementById('primary_color_swatch').style.backgroundColor = this.value;
+        updatePreview();
+    });
+    document.getElementById('secondary_color_picker').addEventListener('input', function () {
+        document.getElementById('secondary_color_swatch').style.backgroundColor = this.value;
+        updatePreview();
+    });
+    document.getElementById('brand_split_position').addEventListener('input', updatePreview);
+
+    function updatePreview() {
+        const primary   = document.getElementById('primary_color_picker').value;
+        const secondary = document.getElementById('secondary_color_picker').value;
+        const gymName   = {{ Js::from($settings->gym_name ?? 'WarmUp') }};
+        const splitInput = document.getElementById('brand_split_position').value;
+        
+        let splitPos;
+        if (splitInput !== '') {
+            splitPos = parseInt(splitInput, 10);
+        } else {
+            const spaceIdx = gymName.indexOf(' ');
+            if (spaceIdx !== -1) {
+                splitPos = spaceIdx;
+            } else if (gymName.toLowerCase() === 'warmup') {
+                splitPos = 4;
+            } else {
+                splitPos = gymName.length;
+            }
+        }
+        
+        // Ensure splitPos is within bounds
+        if (isNaN(splitPos) || splitPos < 0) splitPos = 0;
+        
+        const first = gymName.substring(0, splitPos);
+        const rest = gymName.substring(splitPos);
+        
+        let html = `<span style="color:${primary}">${first}</span>`;
+        if (rest.length > 0) html += `<span style="color:${secondary}">${rest}</span>`;
+        document.getElementById('preview_gym_name').innerHTML = html;
+    }
+</script>
+@endpush
 @endsection
+

@@ -257,8 +257,8 @@
 </div>
 
 {{-- ── Record Payment Modal ─────────────────────────────────────────────────── --}}
-<div id="pay-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+<div id="pay-modal" class="hidden fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh] overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 class="text-lg font-bold text-gray-900">Record Payment</h3>
             <button type="button" onclick="closePayModal()" class="text-gray-400 hover:text-gray-600">
@@ -266,7 +266,7 @@
             </button>
         </div>
 
-        <form action="{{ route('fees.pay') }}" method="POST" class="p-6 space-y-4" id="pay-form">
+        <form action="{{ route('fees.pay') }}" method="POST" class="p-4 space-y-3 overflow-y-auto flex-1" id="pay-form">
             @csrf
             <input type="hidden" name="member_membership_id" id="modal-mm-id">
 
@@ -278,16 +278,16 @@
             </div>
 
             {{-- Balance info --}}
-            <div class="grid grid-cols-3 gap-3 text-center">
-                <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-gray-50 rounded-xl p-2 border border-gray-100">
                     <p class="text-xs text-gray-500">Total</p>
                     <p class="font-bold text-gray-900 text-sm" id="modal-total"></p>
                 </div>
-                <div class="bg-green-50 rounded-xl p-3 border border-green-100">
+                <div class="bg-green-50 rounded-xl p-2 border border-green-100">
                     <p class="text-xs text-gray-500">Paid</p>
                     <p class="font-bold text-green-700 text-sm" id="modal-paid"></p>
                 </div>
-                <div class="bg-red-50 rounded-xl p-3 border border-red-100">
+                <div class="bg-red-50 rounded-xl p-2 border border-red-100">
                     <p class="text-xs text-gray-500">Remaining</p>
                     <p class="font-bold text-red-700 text-sm" id="modal-remaining"></p>
                 </div>
@@ -335,7 +335,7 @@
                           placeholder="Optional note...">{{ old('notes') }}</textarea>
             </div>
 
-            <div class="pt-2 flex justify-end gap-3 border-t border-gray-100 mt-4">
+            <div class="pt-2 flex justify-end gap-3 border-t border-gray-100">
                 <button type="button" onclick="closePayModal()"
                         class="px-5 py-2.5 text-sm font-semibold rounded-xl border-2 border-gray-300 bg-white hover:bg-gray-50 transition-colors text-gray-700">
                     Cancel

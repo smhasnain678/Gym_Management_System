@@ -50,13 +50,48 @@ class ProfileTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('profile_updated');
+        $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('users', [
             'id'    => $user->id,
             'name'  => 'Updated Owner Name',
             'phone' => '03009876543',
         ]);
+    }
+
+    public function test_profile_update_rejects_invalid_short_phone(): void
+    {
+        $user = $this->createOwner();
+
+        $response = $this->actingAs($user)->patch(route('profile.update'), [
+            'name'  => 'Updated Owner Name',
+            'email' => 'owner@warmup.test',
+            'phone' => '0342-34128', // Invalid
+        ]);
+
+        $response->assertSessionHasErrors('phone', null, 'updateProfile');
+    }
+
+    public function test_profile_update_accepts_valid_phone_formats(): void
+    {
+        $user = $this->createOwner();
+
+        $validPhones = [
+            '03423412876',
+            '0342-3412876',
+            '+923423412876'
+        ];
+
+        foreach ($validPhones as $phone) {
+            $response = $this->actingAs($user)->patch(route('profile.update'), [
+                'name'  => 'Updated Owner Name',
+                'email' => 'owner@warmup.test',
+                'phone' => $phone,
+            ]);
+
+            $response->assertSessionHasNoErrors();
+            $this->assertDatabaseHas('users', ['phone' => $phone]);
+        }
     }
 
     public function test_profile_update_requires_name(): void

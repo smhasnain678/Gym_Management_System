@@ -49,10 +49,16 @@
                                     {{ $notification->title }}
                                 </p>
                                 <p class="text-sm text-gray-600 mt-1">{{ $notification->message }}</p>
-                                <p class="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                                    <i data-lucide="clock" class="w-3 h-3"></i>
-                                    {{ $notification->created_at->diffForHumans() }}
-                                </p>
+                                <div class="text-xs text-gray-400 mt-2 space-y-1">
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="calendar" class="w-3 h-3"></i>
+                                        <span>{{ $notification->created_at->format('M d, Y, g:i A') }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="clock" class="w-3 h-3"></i>
+                                        <span>{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                </div>
                             </div>
                             @if(!$notification->is_read)
                                 <div class="flex-shrink-0">

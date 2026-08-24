@@ -35,7 +35,7 @@
                     <td>{{ $member->phone }}<br>{{ $member->email }}</td>
                     <td>{{ $member->joining_date->format('M d, Y') }}</td>
                     <td>{{ $member->trainer ? $member->trainer->name : '-' }}</td>
-                    <td>{{ $member->status }}</td>
+                    <td>{{ ucwords(str_replace('_', ' ', $member->status)) }}</td>
                 </tr>
             @endforeach
         </tbody>

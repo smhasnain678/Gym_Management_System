@@ -11,19 +11,21 @@
         <form method="GET" action="{{ route('reports.members') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, email, phone..." class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, email, phone..." class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="status" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="status" class="report-filter-input">
                     <option value="">All Statuses</option>
-                    <option value="Active" {{ request('status') == 'Active' ? 'selected' : '' }}>Active</option>
-                    <option value="Inactive" {{ request('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                    <option value="expiring_soon" {{ request('status') == 'expiring_soon' ? 'selected' : '' }}>Expiring Soon</option>
+                    <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Trainer</label>
-                <select name="trainer_id" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="trainer_id" class="report-filter-input">
                     <option value="">All Trainers</option>
                     @foreach($trainers as $trainer)
                         <option value="{{ $trainer->id }}" {{ request('trainer_id') == $trainer->id ? 'selected' : '' }}>{{ $trainer->name }}</option>
@@ -32,7 +34,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Active Plan</label>
-                <select name="plan_id" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="plan_id" class="report-filter-input">
                     <option value="">All Plans</option>
                     @foreach($plans as $plan)
                         <option value="{{ $plan->id }}" {{ request('plan_id') == $plan->id ? 'selected' : '' }}>{{ $plan->name }}</option>
@@ -106,11 +108,16 @@
                             <td class="px-6 py-4">{{ $member->joining_date->format('M d, Y') }}</td>
                             <td class="px-6 py-4">{{ $member->trainer ? $member->trainer->name : '-' }}</td>
                             <td class="px-6 py-4">
-                                @if($member->status === 'Active')
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Active</span>
-                                @else
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Inactive</span>
-                                @endif
+                                @php
+                                    $statusColors = [
+                                        'active' => 'bg-green-100 text-green-700',
+                                        'expired' => 'bg-gray-100 text-gray-700',
+                                        'expiring_soon' => 'bg-yellow-100 text-yellow-700',
+                                        'suspended' => 'bg-red-100 text-red-700',
+                                    ];
+                                    $colorClass = $statusColors[$member->status] ?? 'bg-gray-100 text-gray-700';
+                                @endphp
+                                <span class="px-2 py-1 {{ $colorClass }} text-xs rounded-full">{{ ucwords(str_replace('_', ' ', $member->status)) }}</span>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <a href="{{ route('reports.members.print', $member) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs font-medium">

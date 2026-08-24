@@ -153,13 +153,6 @@
         {{-- RIGHT COLUMN: Membership & History --}}
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- Validation / Flash --}}
-            @if(session('success'))
-                <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-2" style="background-color:#DCFCE7; color:#15803D;">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    {{ session('success') }}
-                </div>
-            @endif
             @if($errors->any())
                 <div class="p-4 rounded-xl text-sm flex items-start gap-2" style="background-color:#FEF2F2; color:#DC2626;">
                     <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>

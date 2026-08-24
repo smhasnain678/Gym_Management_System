@@ -27,7 +27,7 @@ class TrainerTest extends TestCase
     {
         return Trainer::create(array_merge([
             'name'         => 'John Trainer',
-            'phone'        => '1234567890',
+            'phone'        => '03001234567',
             'gender'       => 'male',
             'joining_date' => now()->format('Y-m-d'),
             'is_active'    => true,
@@ -80,7 +80,7 @@ class TrainerTest extends TestCase
     public function test_trainers_can_be_searched_by_name(): void
     {
         $this->createTrainer(['name' => 'Alice Smith']);
-        $this->createTrainer(['name' => 'Bob Jones', 'phone' => '0987654321']);
+        $this->createTrainer(['name' => 'Bob Jones', 'phone' => '03007654321']);
 
         $response = $this->actingAs($this->createOwner())->get('/trainers?search=Alice');
         $response->assertSee('Alice Smith');
@@ -106,7 +106,7 @@ class TrainerTest extends TestCase
     public function test_trainers_can_be_filtered_by_status(): void
     {
         $this->createTrainer(['name' => 'Active Trainer',   'is_active' => true]);
-        $this->createTrainer(['name' => 'Inactive Trainer', 'is_active' => false, 'phone' => '0987654321']);
+        $this->createTrainer(['name' => 'Inactive Trainer', 'is_active' => false, 'phone' => '03007654321']);
 
         $response = $this->actingAs($this->createOwner())->get('/trainers?status=active');
         $response->assertSee('Active Trainer');
@@ -124,7 +124,7 @@ class TrainerTest extends TestCase
     {
         $response = $this->actingAs($this->createOwner())->post('/trainers', [
             'name'           => 'New Trainer',
-            'phone'          => '0987654321',
+            'phone'          => '03007654321',
             'gender'         => 'female',
             'joining_date'   => '2025-01-01',
             'specialization' => 'Yoga',
@@ -147,7 +147,7 @@ class TrainerTest extends TestCase
     {
         $response = $this->actingAs($this->createOwner())->post('/trainers', [
             'name'         => 'Minimal Trainer',
-            'phone'        => '1111111111',
+            'phone'        => '03001111111',
             'gender'       => 'male',
             'joining_date' => '2025-01-01',
         ]);
@@ -175,7 +175,7 @@ class TrainerTest extends TestCase
     {
         $response = $this->actingAs($this->createOwner())->post('/trainers', [
             'name'         => 'Bad Email Trainer',
-            'phone'        => '1234567890',
+            'phone'        => '03001234567',
             'gender'       => 'male',
             'joining_date' => '2025-01-01',
             'email'        => 'not-an-email',
@@ -192,7 +192,7 @@ class TrainerTest extends TestCase
 
         $response = $this->actingAs($this->createOwner())->post('/trainers', [
             'name'         => 'Duplicate Email',
-            'phone'        => '0987654321',
+            'phone'        => '03007654321',
             'gender'       => 'male',
             'joining_date' => '2025-01-01',
             'email'        => 'trainer@gym.com',
@@ -207,7 +207,7 @@ class TrainerTest extends TestCase
     {
         $response = $this->actingAs($this->createOwner())->post('/trainers', [
             'name'         => 'Neg Salary',
-            'phone'        => '1234567890',
+            'phone'        => '03001234567',
             'gender'       => 'male',
             'joining_date' => '2025-01-01',
             'salary'       => -5000,
@@ -393,8 +393,8 @@ class TrainerTest extends TestCase
     public function test_active_trainer_count_is_accurate(): void
     {
         $this->createTrainer(['is_active' => true]);
-        $this->createTrainer(['is_active' => true,  'phone' => '0987654320']);
-        $this->createTrainer(['is_active' => false,  'phone' => '0987654321']);
+        $this->createTrainer(['is_active' => true,  'phone' => '03007654320']);
+        $this->createTrainer(['is_active' => false,  'phone' => '03007654321']);
 
         $activeCount = Trainer::where('is_active', true)->count();
         $this->assertEquals(2, $activeCount);
@@ -418,7 +418,7 @@ class TrainerTest extends TestCase
     public function test_index_shows_trainer_specialization(): void
     {
         $this->createTrainer(['name' => 'Yoga Expert', 'specialization' => 'Yoga']);
-        $this->createTrainer(['name' => 'Boxing Pro',  'specialization' => 'Boxing', 'phone' => '0987654321']);
+        $this->createTrainer(['name' => 'Boxing Pro',  'specialization' => 'Boxing', 'phone' => '03007654321']);
 
         $response = $this->actingAs($this->createOwner())->get('/trainers');
         $response->assertStatus(200);
@@ -436,7 +436,7 @@ class TrainerTest extends TestCase
 
         $this->actingAs($owner)->post('/trainers', [
             'name'           => 'Full Fields',
-            'phone'          => '0987654321',
+            'phone'          => '03007654321',
             'email'          => 'full@gym.com',
             'gender'         => 'female',
             'date_of_birth'  => '1990-05-15',

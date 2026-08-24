@@ -53,6 +53,17 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            // Auto-hide flash messages
+            setTimeout(() => {
+                const flashes = document.querySelectorAll('.flash-message');
+                flashes.forEach(f => {
+                    f.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    f.style.opacity = '0';
+                    f.style.transform = 'translateY(-10px)';
+                    setTimeout(() => f.remove(), 500);
+                });
+            }, 4500);
         });
     </script>
 </body>

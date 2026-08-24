@@ -10,22 +10,22 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <form method="GET" action="{{ route('reports.revenue') }}" class="flex flex-col md:flex-row gap-4 items-end">
             <div class="flex-1 w-full">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Start Date</label>
+                <input type="date" name="start_date" value="{{ request('start_date') }}" class="report-filter-input">
             </div>
             <div class="flex-1 w-full">
-                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">End Date</label>
+                <input type="date" name="end_date" value="{{ request('end_date') }}" class="report-filter-input">
             </div>
             <div class="flex-1 w-full">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Specific Month</label>
-                <input type="month" name="month" value="{{ request('month') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Specific Month</label>
+                <input type="month" name="month" value="{{ request('month') }}" class="report-filter-input">
             </div>
-            <div class="flex gap-2 w-full md:w-auto">
-                <button type="submit" class="flex-1 md:flex-none px-6 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium">
+            <div class="flex gap-2 w-full md:w-auto h-[42px]">
+                <button type="submit" class="flex-1 md:flex-none px-6 h-full bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium flex items-center justify-center">
                     Filter
                 </button>
-                <a href="{{ route('reports.revenue') }}" class="flex-1 md:flex-none px-6 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium text-center">
+                <a href="{{ route('reports.revenue') }}" class="flex-1 md:flex-none px-6 h-full bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium flex items-center justify-center">
                     Reset
                 </a>
             </div>

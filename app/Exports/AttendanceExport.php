@@ -36,7 +36,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping
         return [
             $attendance->date->format('Y-m-d'),
             $attendance->member->name,
-            $attendance->status,
+            ucfirst($attendance->status),
             $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->format('h:i A') : '-',
             $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->format('h:i A') : '-',
         ];

@@ -231,18 +231,13 @@
                                        style="color:#6B7280;" title="Edit member">
                                         <i data-lucide="pencil" class="w-4 h-4"></i>
                                     </a>
-                                    <form action="{{ route('members.destroy', $member) }}"
-                                          method="POST"
-                                          onsubmit="return confirm('Remove member \'{{ addslashes($member->name) }}\'? Their history will be preserved.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                id="btn-delete-{{ $member->id }}"
-                                                class="p-1.5 rounded-lg hover:bg-red-50 transition-colors"
-                                                style="color:#9CA3AF;" title="Remove member">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            onclick="openDeleteModal('{{ route('members.destroy', $member) }}', 'Delete Member?', 'Are you sure you want to delete <strong>{{ addslashes($member->name) }}</strong>? Their history will be preserved.')"
+                                            id="btn-delete-{{ $member->id }}"
+                                            class="p-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                                            style="color:#9CA3AF;" title="Remove member">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -265,4 +260,6 @@
     @endif
 
 </div>
+
+<x-delete-modal />
 @endsection

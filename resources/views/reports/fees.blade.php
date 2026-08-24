@@ -11,19 +11,19 @@
         <form method="GET" action="{{ route('reports.fees') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="end_date" value="{{ request('end_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Specific Month</label>
-                <input type="month" name="month" value="{{ request('month') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="month" name="month" value="{{ request('month') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-                <select name="payment_method" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="payment_method" class="report-filter-input">
                     <option value="">All Methods</option>
                     <option value="Cash" {{ request('payment_method') == 'Cash' ? 'selected' : '' }}>Cash</option>
                     <option value="Card" {{ request('payment_method') == 'Card' ? 'selected' : '' }}>Card</option>

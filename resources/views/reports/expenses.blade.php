@@ -11,19 +11,19 @@
         <form method="GET" action="{{ route('reports.expenses') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="end_date" value="{{ request('end_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Specific Month</label>
-                <input type="month" name="month" value="{{ request('month') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="month" name="month" value="{{ request('month') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select name="expense_category_id" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="expense_category_id" class="report-filter-input">
                     <option value="">All Categories</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ request('expense_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>

@@ -782,4 +782,33 @@ class MemberTest extends TestCase
         $this->assertNotNull($member->profile_photo);
         Storage::disk('public')->assertExists($member->profile_photo);
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 32. Email uniqueness ignores soft-deleted members
+    // ─────────────────────────────────────────────────────────────────────────
+    public function test_can_reuse_email_of_soft_deleted_member(): void
+    {
+        // 1. Create a member with email
+        $firstMember = $this->createMember(['email' => 'reuse@example.com']);
+
+        // 2. Soft-delete the member
+        $firstMember->delete();
+
+        // 3. Create another member with the same email
+        $response = $this->actingAs($this->createOwner())->post('/members', [
+            'name'         => 'Second Member',
+            'email'        => 'reuse@example.com',
+            'phone'        => '03001234567',
+            'gender'       => 'female',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('members', [
+            'name'  => 'Second Member',
+            'email' => 'reuse@example.com',
+            'deleted_at' => null,
+        ]);
+    }
 }

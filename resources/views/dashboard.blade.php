@@ -8,17 +8,15 @@
 <div class="space-y-6">
 
     {{-- Welcome Banner --}}
-    <div class="rounded-2xl p-6 text-white overflow-hidden relative shadow-sm"
-         style="background: linear-gradient(135deg, #22C55E 0%, #15803D 100%);">
-        <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full opacity-20" style="background: white;"></div>
-        <div class="absolute -right-4 -bottom-12 w-56 h-56 rounded-full opacity-10" style="background: white;"></div>
-        <div class="relative flex justify-between items-center">
+    <div class="rounded-2xl p-6 lg:p-7 overflow-hidden relative border shadow-sm"
+         style="background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border-color: #E2E8F0;">
+        <div class="relative flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold mb-1">Welcome back, {{ auth()->user()->name }}! 👋</h1>
-                <p class="text-green-100 text-sm">Here is what's happening at your gym today, {{ now()->format('l, d F Y') }}</p>
+                <h1 class="text-2xl font-bold mb-1.5" style="color: #0F172A;">Welcome back, {{ auth()->user()->name }}</h1>
+                <p class="text-sm" style="color: #64748B;">Here is what's happening at your gym today, <span class="font-medium" style="color: #475569;">{{ now()->format('l, d F Y') }}</span></p>
             </div>
             <div class="hidden sm:block">
-                <a href="#" class="inline-flex items-center gap-2 bg-white text-green-700 px-4 py-2 rounded-xl font-medium text-sm hover:bg-green-50 transition-colors">
+                <a href="{{ route('members.create') }}" class="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-green-700 transition-colors shadow-sm active:scale-95" style="background-color: #22C55E;">
                     <i data-lucide="plus" class="w-4 h-4"></i> Add Member
                 </a>
             </div>
@@ -26,9 +24,10 @@
     </div>
 
     {{-- Core Stats Grid --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
         <x-dashboard-stat label="Total Members" :value="$totalMembers" icon="users" color="#22C55E" bg="#DCFCE7" />
         <x-dashboard-stat label="Active Members" :value="$activeMembers" icon="user-check" color="#3B82F6" bg="#DBEAFE" />
+        <x-dashboard-stat label="Today's New Members" :value="$todaysNewMembers" icon="user-plus" color="#10B981" bg="#D1FAE5" />
         <x-dashboard-stat label="Active Trainers" :value="$activeTrainers" icon="dumbbell" color="#A855F7" bg="#F3E8FF" />
         <x-dashboard-stat label="Today's Check-ins" :value="$todaysAttendance" icon="calendar-check" color="#F59E0B" bg="#FEF3C7" />
     </div>

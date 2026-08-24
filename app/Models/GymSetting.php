@@ -9,6 +9,9 @@ class GymSetting extends Model
     protected $fillable = [
         'gym_name',
         'gym_logo',
+        'primary_color',
+        'secondary_color',
+        'brand_split_position',
         'owner_name',
         'contact_email',
         'contact_phone',

@@ -32,11 +32,12 @@
                     {{ $trainer->is_active ? 'Deactivate' : 'Activate' }}
                 </button>
             </form>
-            <button type="button" onclick="document.getElementById('delete-modal').classList.remove('hidden')"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                Delete
-            </button>
+                            <button type="button"
+                                    onclick="openDeleteModal('{{ route('trainers.destroy', $trainer) }}', 'Delete Trainer?', 'Are you sure you want to delete <strong>{{ addslashes($trainer->name) }}</strong>? This action cannot be undone if the trainer has no linked members.', '{{ $trainer->members()->count() > 0 ? 'This trainer has <strong>' . $trainer->members()->count() . '</strong> assigned member(s). Deletion will be blocked by the database.' : '' }}')"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                Delete
+                            </button>
         </div>
     </div>
 
@@ -119,20 +120,6 @@
 
         {{-- RIGHT COLUMN: Professional Details --}}
         <div class="lg:col-span-2 space-y-6">
-
-            {{-- Flash messages --}}
-            @if(session('success'))
-                <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-2" style="background-color:#DCFCE7; color:#15803D;">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-2" style="background-color:#FEE2E2; color:#DC2626;">
-                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                    {{ session('error') }}
-                </div>
-            @endif
 
             {{-- Professional Details --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -251,37 +238,7 @@
 </div>
 
 {{-- Delete Modal --}}
-<div id="delete-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 class="text-lg font-bold text-red-600">Delete Trainer?</h3>
-            <button onclick="document.getElementById('delete-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <form action="{{ route('trainers.destroy', $trainer) }}" method="POST" class="p-6 space-y-4">
-            @csrf
-            @method('DELETE')
-            <p class="text-sm" style="color:#374151;">
-                Are you sure you want to delete <strong>{{ $trainer->name }}</strong>? This action cannot be undone if the trainer has no linked members.
-            </p>
-            @if($trainer->members()->count() > 0)
-            <div class="p-3 rounded-xl text-sm" style="background-color:#FEF3C7; color:#92400E; border:1px solid #FDE68A;">
-                <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i>
-                This trainer has <strong>{{ $trainer->members()->count() }}</strong> assigned member(s). Deletion will be blocked by the database.
-            </div>
-            @endif
-            <div class="pt-2 flex justify-end gap-3 border-t border-gray-100 mt-4">
-                <button type="button"
-                        onclick="document.getElementById('delete-modal').classList.add('hidden')"
-                        class="px-5 py-2.5 text-sm font-semibold rounded-xl border-2 border-gray-300 bg-white hover:bg-gray-50 transition-colors"
-                        style="color:#374151;">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 shadow-sm transition-all active:scale-95">
-                    Yes, Delete
-                </button>
-            </div>
-        </form>
-    </div>
 </div>
+
+<x-delete-modal />
 @endsection

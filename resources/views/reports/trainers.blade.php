@@ -11,11 +11,11 @@
         <form method="GET" action="{{ route('reports.trainers') }}" class="flex flex-col md:flex-row gap-4 items-end">
             <div class="flex-1 w-full">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, specialization, phone..." class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, specialization, phone..." class="report-filter-input">
             </div>
             <div class="flex-1 w-full">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="status" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="status" class="report-filter-input">
                     <option value="">All Statuses</option>
                     <option value="Active" {{ request('status') == 'Active' ? 'selected' : '' }}>Active</option>
                     <option value="Inactive" {{ request('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>

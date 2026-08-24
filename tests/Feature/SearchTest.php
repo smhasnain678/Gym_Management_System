@@ -31,7 +31,7 @@ class SearchTest extends TestCase
     {
         $member = Member::create([
             'name' => 'John Doe',
-            'phone' => '1234567890',
+            'phone' => '03001234567',
             'gender' => 'male',
             'joining_date' => now()->toDateString(),
             'status' => 'active'
@@ -47,7 +47,7 @@ class SearchTest extends TestCase
     {
         $trainer = Trainer::create([
             'name' => 'Jane Smith',
-            'phone' => '0987654321',
+            'phone' => '03007654321',
             'gender' => 'female',
             'specialization' => 'Yoga',
             'joining_date' => now()->toDateString(),

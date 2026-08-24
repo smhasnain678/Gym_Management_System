@@ -11,15 +11,15 @@
         <form method="GET" action="{{ route('reports.attendance') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="end_date" value="{{ request('end_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Member</label>
-                <select name="member_id" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="member_id" class="report-filter-input">
                     <option value="">All Members</option>
                     @foreach($members as $member)
                         <option value="{{ $member->id }}" {{ request('member_id') == $member->id ? 'selected' : '' }}>{{ $member->name }}</option>
@@ -28,10 +28,10 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="status" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="status" class="report-filter-input">
                     <option value="">All Statuses</option>
-                    <option value="Present" {{ request('status') == 'Present' ? 'selected' : '' }}>Present</option>
-                    <option value="Absent" {{ request('status') == 'Absent' ? 'selected' : '' }}>Absent</option>
+                    <option value="present" {{ request('status') == 'present' ? 'selected' : '' }}>Present</option>
+                    <option value="absent" {{ request('status') == 'absent' ? 'selected' : '' }}>Absent</option>
                 </select>
             </div>
             <div class="flex gap-2">
@@ -116,7 +116,7 @@
                             <td class="px-6 py-4">{{ $attendance->date->format('M d, Y') }}</td>
                             <td class="px-6 py-4 font-medium text-gray-900">{{ $attendance->member->name }}</td>
                             <td class="px-6 py-4">
-                                @if($attendance->status === 'Present')
+                                @if($attendance->status === 'present')
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
                                         <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Present
                                     </span>

@@ -18,6 +18,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
+
+    {{-- Gym branding CSS custom properties — applied from saved GymSetting values --}}
+    <style>
+        :root {
+            --gym-primary:   {{ $gymSettings?->primary_color ?? '#22C55E' }};
+            --gym-secondary: {{ $gymSettings?->secondary_color ?? '#16A34A' }};
+        }
+    </style>
 </head>
 <body class="flex h-screen overflow-hidden" style="background-color: #F1F1F1; font-family: 'Inter', sans-serif; color: #111827;">
 
@@ -28,17 +36,39 @@
 
         <!-- Logo -->
         <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                 style="background: linear-gradient(135deg, #22C55E, #16A34A);">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-            </div>
-            <span class="text-xl font-bold text-white">Warm<span style="color: #22C55E;">Up</span></span>
+            @if(!empty($gymSettings?->gym_logo))
+                {{-- Custom uploaded logo --}}
+                <img src="{{ asset('storage/' . $gymSettings->gym_logo) }}"
+                     alt="{{ $gymSettings->gym_name ?? 'Gym Logo' }}"
+                     class="w-9 h-9 rounded-xl object-cover flex-shrink-0">
+            @else
+                {{-- Default icon fallback --}}
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                     style="background: linear-gradient(135deg, #22C55E, #16A34A);">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+            @endif
+            {{-- Two-colour gym name based on brand split position --}}
+            @php
+                $gymName = $gymSettings?->gym_name ?? 'WarmUp';
+                $splitPos = $gymSettings?->brand_split_position;
+                if (is_null($splitPos)) {
+                    $splitPos = strpos($gymName, ' ') !== false ? strpos($gymName, ' ') : (strtolower($gymName) === 'warmup' ? 4 : mb_strlen($gymName));
+                }
+                
+                $firstPart = mb_substr($gymName, 0, $splitPos);
+                $secondPart = mb_substr($gymName, $splitPos);
+            @endphp
+            <span class="text-xl font-bold">
+                <span style="color: var(--gym-primary);">{{ $firstPart }}</span>@if(mb_strlen($secondPart) > 0)<span style="color: var(--gym-secondary);">{{ $secondPart }}</span>@endif
+            </span>
         </div>
 
+
         <!-- Navigation -->
-        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 sidebar-scrollbar">
             <p class="px-3 mb-2 text-xs font-semibold uppercase tracking-widest" style="color: #64748B;">{{ __('Main Menu') }}</p>
 
             <a href="{{ route('dashboard') }}"
@@ -202,7 +232,7 @@
                 <!-- Notifications bell -->
                 <a href="{{ route('notifications.index') }}" class="relative p-2 rounded-xl hover:bg-gray-100" style="color: #6B7280;">
                     <i data-lucide="bell" class="w-5 h-5"></i>
-                    <span id="notification-badge" class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full hidden"></span>
+                    <span id="notification-badge" style="display:none; position:absolute; top:0; right:0; transform:translate(25%,-25%); background-color:#EF4444; color:#fff; font-size:10px; font-weight:700; line-height:1; min-width:20px; height:20px; padding:0 4px; border-radius:10px; border:2px solid #fff; align-items:center; justify-content:center; white-space:nowrap; box-sizing:border-box;"></span>
                 </a>
             </div>
         </header>
@@ -210,16 +240,16 @@
         <!-- PAGE CONTENT -->
         <main class="flex-1 overflow-y-auto p-6">
             @if(session('success'))
-                <div class="mb-4 flex items-center gap-3 p-4 rounded-2xl text-sm font-medium"
-                     style="background-color: #DCFCE7; color: #15803D;">
+                <div class="flash-message mb-4 flex items-center gap-3 p-4 rounded-2xl text-sm font-medium"
+                     style="background-color: #DCFCE7; color: #15803D; transition: opacity 0.5s ease, transform 0.5s ease;">
                     <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0"></i>
                     {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-4 flex items-center gap-3 p-4 rounded-2xl text-sm font-medium"
-                     style="background-color: #FEE2E2; color: #DC2626;">
+                <div class="flash-message mb-4 flex items-center gap-3 p-4 rounded-2xl text-sm font-medium"
+                     style="background-color: #FEE2E2; color: #DC2626; transition: opacity 0.5s ease, transform 0.5s ease;">
                     <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
                     {{ session('error') }}
                 </div>
@@ -233,25 +263,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
 
-            // Network status indicator
-            const statusEl = document.getElementById('network-status');
-            const statusText = document.getElementById('network-status-text');
-            function updateStatus() {
-                if (navigator.onLine) {
-                    statusEl.style.backgroundColor = '#DCFCE7';
-                    statusEl.style.color = '#15803D';
-                    statusEl.querySelector('span').style.backgroundColor = '#22C55E';
-                    statusText.textContent = '{{ __("Online") }}';
-                } else {
-                    statusEl.style.backgroundColor = '#FEE2E2';
-                    statusEl.style.color = '#DC2626';
-                    statusEl.querySelector('span').style.backgroundColor = '#DC2626';
-                    statusText.textContent = '{{ __("Offline") }}';
-                }
-            }
-            updateStatus();
-            window.addEventListener('online', updateStatus);
-            window.addEventListener('offline', updateStatus);
+            // Network status indicator managed by offline.js
             // Note: Advanced sync states (Syncing.../Synced) are managed by resources/js/offline.js
 
             // Mobile sidebar toggle
@@ -270,9 +282,10 @@
                     .then(data => {
                         const badge = document.getElementById('notification-badge');
                         if (data.count > 0) {
-                            badge.classList.remove('hidden');
+                            badge.textContent = data.count > 99 ? '99+' : data.count;
+                            badge.style.display = 'flex';
                         } else {
-                            badge.classList.add('hidden');
+                            badge.style.display = 'none';
                         }
                     })
                     .catch(error => console.error('Error fetching notifications:', error));
@@ -356,6 +369,16 @@
                     }
                 });
             }
+
+            // Auto-hide flash messages after 4.5 seconds
+            setTimeout(() => {
+                const flashes = document.querySelectorAll('.flash-message');
+                flashes.forEach(f => {
+                    f.style.opacity = '0';
+                    f.style.transform = 'translateY(-10px)';
+                    setTimeout(() => f.remove(), 500);
+                });
+            }, 4500);
         });
     </script>
 

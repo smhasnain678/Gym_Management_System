@@ -39,7 +39,7 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping
             $member->email,
             $member->phone,
             $member->joining_date->format('Y-m-d'),
-            $member->status,
+            ucwords(str_replace('_', ' ', $member->status)),
             $member->trainer ? $member->trainer->name : 'None',
         ];
     }

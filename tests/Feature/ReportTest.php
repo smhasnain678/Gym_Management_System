@@ -35,7 +35,7 @@ class ReportTest extends TestCase
         return Member::create([
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'phone' => '1234567890',
+            'phone' => '03001234567',
             'gender' => 'male',
             'joining_date' => now(),
             'status' => 'active',
@@ -133,7 +133,7 @@ class ReportTest extends TestCase
         $member2 = Member::create([
             'name' => 'Jane Doe',
             'email' => 'jane@example.com',
-            'phone' => '0987654321',
+            'phone' => '03007654321',
             'gender' => 'female',
             'joining_date' => now(),
             'status' => 'active',
@@ -153,7 +153,7 @@ class ReportTest extends TestCase
         Member::create([
             'name' => 'Jane Doe',
             'email' => 'jane@example.com',
-            'phone' => '0987654321',
+            'phone' => '03007654321',
             'gender' => 'female',
             'joining_date' => now(),
             'status' => 'suspended',
@@ -195,7 +195,7 @@ class ReportTest extends TestCase
     {
         Trainer::create([
             'name' => 'Trainer 1',
-            'phone' => '1111111111',
+            'phone' => '03001111111',
             'gender' => 'male',
             'specialization' => 'Yoga',
             'joining_date' => now(),

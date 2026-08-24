@@ -37,7 +37,7 @@
                 <tr>
                     <td>{{ $attendance->date->format('M d, Y') }}</td>
                     <td>{{ $attendance->member->name }}</td>
-                    <td>{{ $attendance->status }}</td>
+                    <td>{{ ucfirst($attendance->status) }}</td>
                     <td>{{ $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->format('h:i A') : '-' }}</td>
                     <td>{{ $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->format('h:i A') : '-' }}</td>
                 </tr>

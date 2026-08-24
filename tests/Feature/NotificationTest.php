@@ -23,7 +23,7 @@ class NotificationTest extends TestCase
     public function test_dashboard_generates_expiry_notifications()
     {
         $plan = MembershipPlan::create(['name' => 'Test Plan', 'duration_days' => 30, 'price' => 1000, 'sort_order' => 1]);
-        $member = Member::create(['name' => 'John Doe', 'phone' => '1234567890', 'gender' => 'male', 'joining_date' => today(), 'status' => 'active']);
+        $member = Member::create(['name' => 'John Doe', 'phone' => '03001234567', 'gender' => 'male', 'joining_date' => today(), 'status' => 'active']);
         
         $membership = MemberMembership::create([
             'member_id' => $member->id,
@@ -50,7 +50,7 @@ class NotificationTest extends TestCase
     public function test_dashboard_generates_pending_fee_notifications()
     {
         $plan = MembershipPlan::create(['name' => 'Test Plan', 'duration_days' => 30, 'price' => 1000, 'sort_order' => 1]);
-        $member = Member::create(['name' => 'John Doe', 'phone' => '1234567890', 'gender' => 'male', 'joining_date' => today(), 'status' => 'active']);
+        $member = Member::create(['name' => 'John Doe', 'phone' => '03001234567', 'gender' => 'male', 'joining_date' => today(), 'status' => 'active']);
         
         $membership = MemberMembership::create([
             'member_id' => $member->id,

@@ -190,6 +190,10 @@ function setStatusSynced() {
     setTimeout(setStatusOnline, 3000);
 }
 
+function setStatusSyncFailed() {
+    updateStatusIndicator('Sync Failed', '#FEE2E2', '#DC2626', '#DC2626');
+}
+
 function updateStatusIndicator(text, bgColor, textColor, dotColor) {
     const el       = document.getElementById('network-status');
     const textEl   = document.getElementById('network-status-text');
@@ -259,17 +263,18 @@ export async function syncQueuedActions() {
                 console.warn(`${result.conflicts} action(s) had conflicts (server record is newer). Items kept in queue.`);
             }
 
-        } catch (err) {
+        } catch (error) {
+            console.error('Network or sync error:', error);
             allSynced = false;
-            console.error('Sync error:', err);
-            break;
+            setStatusSyncFailed();
+            return; // Break completely if network fails
         }
     }
 
     if (allSynced) {
         setStatusSynced();
     } else {
-        setStatusOnline(); // partial sync — revert to online, will retry next time
+        setStatusSyncFailed();
     }
 }
 

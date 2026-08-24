@@ -7,20 +7,6 @@
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
 
-    {{-- Flash messages --}}
-    @if(session('success'))
-        <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-2" style="background-color:#DCFCE7; color:#15803D;">
-            <i data-lucide="check-circle" class="w-4 h-4"></i>
-            {{ session('success') }}
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-2" style="background-color:#FEE2E2; color:#DC2626;">
-            <i data-lucide="alert-circle" class="w-4 h-4"></i>
-            {{ session('error') }}
-        </div>
-    @endif
-
     {{-- Header & Stats --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">

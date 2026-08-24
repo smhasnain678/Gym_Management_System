@@ -23,11 +23,14 @@
     @endif
 
     @if (session('status'))
-        <div class="mb-4 flex items-center gap-3 p-4 rounded-2xl text-sm" style="background-color: #DCFCE7; color: #15803D;">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+        <div class="flash-message mb-4 font-medium text-sm p-4 rounded-xl" style="background-color: #DCFCE7; color: #15803D;">
             {{ session('status') }}
+        </div>
+    @endif
+    
+    @if (session('success'))
+        <div class="flash-message mb-4 font-medium text-sm p-4 rounded-xl" style="background-color: #DCFCE7; color: #15803D;">
+            {{ session('success') }}
         </div>
     @endif
 

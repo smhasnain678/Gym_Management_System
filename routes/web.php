@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MembershipPlanController;
@@ -129,6 +130,7 @@ Route::middleware('auth')->group(function () {
 
     // Expense Management
     Route::resource('expenses', ExpenseController::class)->except(['show']);
+    Route::post('expense-categories', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
     // Global Search
     Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'index'])->name('api.search');
 

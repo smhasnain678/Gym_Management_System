@@ -11,7 +11,7 @@
         <form method="GET" action="{{ route('reports.memberships') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
-                <select name="plan_id" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="plan_id" class="report-filter-input">
                     <option value="">All Plans</option>
                     @foreach($plans as $plan)
                         <option value="{{ $plan->id }}" {{ request('plan_id') == $plan->id ? 'selected' : '' }}>{{ $plan->name }}</option>
@@ -20,7 +20,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="status" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <select name="status" class="report-filter-input">
                     <option value="">All Statuses</option>
                     <option value="Active" {{ request('status') == 'Active' ? 'selected' : '' }}>Active</option>
                     <option value="Expired" {{ request('status') == 'Expired' ? 'selected' : '' }}>Expired</option>
@@ -29,11 +29,11 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="start_date" value="{{ request('start_date') }}" class="report-filter-input">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 text-sm">
+                <input type="date" name="end_date" value="{{ request('end_date') }}" class="report-filter-input">
             </div>
             <div class="flex gap-2">
                 <button type="submit" class="flex-1 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium">Filter</button>
