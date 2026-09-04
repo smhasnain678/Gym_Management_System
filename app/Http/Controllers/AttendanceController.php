@@ -125,7 +125,7 @@ class AttendanceController extends Controller
 
         // Cannot mark attendance for suspended member
         if ($member->status === 'suspended') {
-            return back()->with('error', 'Cannot mark attendance for a suspended member.');
+            return back()->with('error', __('Cannot mark attendance for a suspended member.'));
         }
 
         // Duplicate protection via whereDate
@@ -151,12 +151,12 @@ class AttendanceController extends Controller
 
         // Log Activity only if it was recently created (to avoid spamming logs on updates)
         if ($attendance->wasRecentlyCreated) {
-            $this->logActivity('Attendance Marked', "Marked attendance ({$attendance->status}) for {$member->name} on {$attendance->date->format('Y-m-d')}.", $attendance);
+            $this->logActivity('Attendance Marked', "Marked attendance ({$attendance->status}) for {$member->name} on {$attendance->date->gymDateFormat()}.", $attendance);
         } else if ($attendance->wasChanged()) {
-            $this->logActivity('Attendance Updated', "Updated attendance ({$attendance->status}) for {$member->name} on {$attendance->date->format('Y-m-d')}.", $attendance);
+            $this->logActivity('Attendance Updated', "Updated attendance ({$attendance->status}) for {$member->name} on {$attendance->date->gymDateFormat()}.", $attendance);
         }
 
-        return back()->with('success', "Attendance marked successfully for {$member->name}.");
+        return back()->with('success', __('Attendance marked successfully for :name.', ['name' => $member->name]));
     }
 
     /**
@@ -177,10 +177,10 @@ class AttendanceController extends Controller
         ]);
 
         if ($attendance->wasChanged()) {
-            $this->logActivity('Attendance Updated', "Updated attendance ({$attendance->status}) for {$attendance->member->name} on {$attendance->date->format('Y-m-d')}.", $attendance);
+            $this->logActivity('Attendance Updated', "Updated attendance ({$attendance->status}) for {$attendance->member->name} on {$attendance->date->gymDateFormat()}.", $attendance);
         }
 
-        return back()->with('success', 'Attendance record updated successfully.');
+        return back()->with('success', __('Attendance record updated successfully.'));
     }
 
     /**
@@ -189,11 +189,11 @@ class AttendanceController extends Controller
     public function checkout(Attendance $attendance)
     {
         if ($attendance->status !== 'present') {
-            return back()->with('error', 'Only present members can be checked out.');
+            return back()->with('error', __('Only present members can be checked out.'));
         }
         
         if ($attendance->check_out_time) {
-            return back()->with('error', 'Member is already checked out.');
+            return back()->with('error', __('Member is already checked out.'));
         }
 
         $attendance->update([
@@ -202,7 +202,7 @@ class AttendanceController extends Controller
 
         $this->logActivity('Attendance Checked Out', "Checked out {$attendance->member->name} at {$attendance->check_out_time}.", $attendance);
 
-        return back()->with('success', "{$attendance->member->name} checked out successfully.");
+        return back()->with('success', __(':name checked out successfully.', ['name' => $attendance->member->name]));
     }
 
     /**

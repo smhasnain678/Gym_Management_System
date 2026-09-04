@@ -40,7 +40,7 @@ class ForgotPasswordController extends Controller
 
         // Always show success to prevent user enumeration
         if (! $user) {
-            return back()->with('status', 'If that email is registered, a reset link has been generated.');
+            return back()->with('status', __('If that email is registered, a reset link has been generated.'));
         }
 
         // Generate a secure token (same algorithm Laravel's PasswordBroker uses)
@@ -58,7 +58,7 @@ class ForgotPasswordController extends Controller
         return redirect()->route('password.reset', [
             'token' => $token,
             'email' => $request->email,
-        ])->with('status', 'A reset token has been generated. Please set your new password below.');
+        ])->with('status', __('A reset token has been generated. Please set your new password below.'));
     }
 
     /**
@@ -109,6 +109,6 @@ class ForgotPasswordController extends Controller
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return redirect()->route('login')
-            ->with('status', 'Your password has been reset successfully. Please log in.');
+            ->with('status', __('Your password has been reset successfully. Please log in.'));
     }
 }

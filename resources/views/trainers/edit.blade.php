@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Trainer')
-@section('page_title', 'Edit Trainer')
+@section('title', __('Edit Trainer'))
+@section('page_title', __('Edit Trainer'))
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
 
     <div class="flex items-center gap-4 mb-6">
         <a href="{{ route('trainers.show', $trainer) }}" class="inline-flex items-center gap-1.5 text-sm transition-colors hover:opacity-70" style="color: #22C55E;">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Profile
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> {{ __('Back to Profile') }}
         </a>
     </div>
 
@@ -28,40 +28,40 @@
         {{-- Basic Information --}}
         <div>
             <h2 class="text-base font-bold mb-4 flex items-center gap-2" style="color: #111827;">
-                <i data-lucide="user" class="w-5 h-5 text-gray-400"></i> Basic Information
+                <i data-lucide="user" class="w-5 h-5 text-gray-400"></i> {{ __('Basic Information') }}
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Full Name <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Full Name') }} <span class="text-red-500">*</span></label>
                     <input type="text" name="name" value="{{ old('name', $trainer->name) }}" required
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Phone <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Phone') }} <span class="text-red-500">*</span></label>
                     <input type="text" name="phone" value="{{ old('phone', $trainer->phone) }}" required
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Email (Optional)</label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Email (Optional)') }}</label>
                     <input type="email" name="email" value="{{ old('email', $trainer->email) }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Gender <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Gender') }} <span class="text-red-500">*</span></label>
                     <select name="gender" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
-                        <option value="">— Select Gender —</option>
-                        <option value="male" {{ old('gender', $trainer->gender) == 'male' ? 'selected' : '' }}>Male</option>
-                        <option value="female" {{ old('gender', $trainer->gender) == 'female' ? 'selected' : '' }}>Female</option>
-                        <option value="other" {{ old('gender', $trainer->gender) == 'other' ? 'selected' : '' }}>Other</option>
+                        <option value="">{{ __('— Select Gender —') }}</option>
+                        <option value="male" {{ old('gender', $trainer->gender) == 'male' ? 'selected' : '' }}>{{ __('Male') }}</option>
+                        <option value="female" {{ old('gender', $trainer->gender) == 'female' ? 'selected' : '' }}>{{ __('Female') }}</option>
+                        <option value="other" {{ old('gender', $trainer->gender) == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Date of Birth</label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Date of Birth') }}</label>
                     <input type="date" name="date_of_birth" value="{{ old('date_of_birth', $trainer->date_of_birth?->format('Y-m-d')) }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Address</label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Address') }}</label>
                     <input type="text" name="address" value="{{ old('address', $trainer->address) }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
@@ -73,26 +73,26 @@
         {{-- Professional Details --}}
         <div>
             <h2 class="text-base font-bold mb-4 flex items-center gap-2" style="color: #111827;">
-                <i data-lucide="briefcase" class="w-5 h-5 text-gray-400"></i> Professional Details
+                <i data-lucide="briefcase" class="w-5 h-5 text-gray-400"></i> {{ __('Professional Details') }}
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Specialization</label>
-                    <input type="text" name="specialization" value="{{ old('specialization', $trainer->specialization) }}" placeholder="e.g. Yoga, Weightlifting"
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Specialization') }}</label>
+                    <input type="text" name="specialization" value="{{ old('specialization', $trainer->specialization) }}" placeholder="{{ __('e.g. Yoga, Weightlifting') }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Joining Date <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Joining Date') }} <span class="text-red-500">*</span></label>
                     <input type="date" name="joining_date" value="{{ old('joining_date', $trainer->joining_date->format('Y-m-d')) }}" required
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Salary / Rate (Optional)</label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Salary / Rate (Optional)') }}</label>
                     <input type="number" step="0.01" min="0" name="salary" value="{{ old('salary', $trainer->salary) }}"
                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors">
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium mb-1.5 text-gray-700">Bio / Notes</label>
+                    <label class="block text-sm font-medium mb-1.5 text-gray-700">{{ __('Bio / Notes') }}</label>
                     <textarea name="bio" rows="3"
                               class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white transition-colors resize-none">{{ old('bio', $trainer->bio) }}</textarea>
                 </div>
@@ -100,16 +100,16 @@
             <div class="mt-4 flex items-center gap-2">
                 <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $trainer->is_active) ? 'checked' : '' }}
                        class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500">
-                <label for="is_active" class="text-sm font-medium text-gray-700">Active Trainer</label>
+                <label for="is_active" class="text-sm font-medium text-gray-700">{{ __('Active Trainer') }}</label>
             </div>
         </div>
 
         <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
             <a href="{{ route('trainers.show', $trainer) }}" class="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors" style="color: #374151;">
-                Cancel
+                {{ __('Cancel') }}
             </a>
             <button type="submit" class="px-5 py-2.5 text-sm font-semibold text-white rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95" style="background-color: #22C55E;">
-                Save Changes
+                {{ __('Save Changes') }}
             </button>
         </div>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ in_array(app()->getLocale(), ['ur', 'sd']) ? 'rtl' : 'ltr' }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="ltr" data-theme="{{ $gymSettings?->theme ?? 'light' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,6 +28,17 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden" style="background-color: #F1F1F1; font-family: 'Inter', sans-serif; color: #111827;">
+
+    {{-- Light mode nav active style (dark mode is handled by CSS variables in app.css) --}}
+    <style>
+        .sidebar-link-active {
+            background-color: #22C55E;
+            color: #ffffff;
+        }
+        .sidebar-link-active i {
+            color: #ffffff;
+        }
+    </style>
 
     <!-- ===== SIDEBAR ===== -->
     <aside id="sidebar"
@@ -73,64 +84,56 @@
 
             <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium group
-                      {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('dashboard') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('dashboard') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="layout-dashboard" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Dashboard') }}
             </a>
 
             <a href="{{ route('membership-plans.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('membership-plans.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('membership-plans.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('membership-plans.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="layers" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Membership Plans') }}
             </a>
 
             <a href="{{ route('members.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('members.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('members.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('members.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="users" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Members') }}
             </a>
 
             <a href="{{ route('trainers.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('trainers.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('trainers.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('trainers.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="dumbbell" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Trainers') }}
             </a>
 
             <a href="{{ route('attendances.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('attendances.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('attendances.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('attendances.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="calendar-check" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Attendance') }}
             </a>
 
             <a href="{{ route('fees.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('fees.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('fees.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('fees.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="credit-card" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Fee Management') }}
             </a>
 
             <a href="{{ route('expenses.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('expenses.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('expenses.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('expenses.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="receipt" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Expenses') }}
             </a>
 
             <a href="{{ route('reports.index') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                      {{ request()->routeIs('reports.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-               style="{{ request()->routeIs('reports.*') ? 'background-color: #22C55E;' : '' }}">
+                      {{ request()->routeIs('reports.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                 <i data-lucide="bar-chart-2" class="w-4.5 h-4.5 flex-shrink-0"></i>
                 {{ __('Reports') }}
             </a>
@@ -140,24 +143,21 @@
 
                 <a href="{{ route('profile.edit') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                          {{ request()->routeIs('profile.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-                   style="{{ request()->routeIs('profile.*') ? 'background-color: #22C55E;' : '' }}">
+                          {{ request()->routeIs('profile.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                     <i data-lucide="user-circle" class="w-4.5 h-4.5 flex-shrink-0"></i>
                     {{ __('Profile') }}
                 </a>
 
                 <a href="{{ route('settings.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                          {{ request()->routeIs('settings.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-                   style="{{ request()->routeIs('settings.*') ? 'background-color: #22C55E;' : '' }}">
+                          {{ request()->routeIs('settings.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                     <i data-lucide="settings" class="w-4.5 h-4.5 flex-shrink-0"></i>
                     {{ __('Settings') }}
                 </a>
                 
                 <a href="{{ route('activity-logs.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                          {{ request()->routeIs('activity-logs.*') ? 'text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-                   style="{{ request()->routeIs('activity-logs.*') ? 'background-color: #22C55E;' : '' }}">
+                          {{ request()->routeIs('activity-logs.*') ? 'sidebar-link-active' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
                     <i data-lucide="list" class="w-4.5 h-4.5 flex-shrink-0"></i>
                     {{ __('Activity Logs') }}
                 </a>
@@ -192,7 +192,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         <!-- TOP NAV -->
-        <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
+        <header class="site-header flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
             <!-- Mobile sidebar toggle -->
             <button id="sidebar-toggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100" style="color: #111827;">
                 <i data-lucide="menu" class="w-5 h-5"></i>

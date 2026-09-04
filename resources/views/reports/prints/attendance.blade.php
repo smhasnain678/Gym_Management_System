@@ -43,7 +43,7 @@
             <div>
                 <strong>Date Range:</strong> 
                 @if($request->start_date && $request->end_date)
-                    {{ \Carbon\Carbon::parse($request->start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($request->end_date)->format('M d, Y') }}
+                    {{ \Carbon\Carbon::parse($request->start_date)->gymDateFormat() }} - {{ \Carbon\Carbon::parse($request->end_date)->gymDateFormat() }}
                 @elseif($request->month)
                     {{ \Carbon\Carbon::parse($request->month)->format('F Y') }}
                 @else
@@ -53,7 +53,7 @@
                 @if($request->status) <strong>Status:</strong> {{ $request->status }} @endif
             </div>
             <div>
-                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->format('M d, Y h:i A') }}
+                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
             </div>
         </div>
 
@@ -89,11 +89,11 @@
             <tbody>
                 @forelse($attendances as $attendance)
                     <tr>
-                        <td>{{ $attendance->date->format('M d, Y') }}</td>
+                        <td>{{ $attendance->date->gymDateFormat() }}</td>
                         <td><strong>{{ $attendance->member->name }}</strong></td>
                         <td>{{ $attendance->status }}</td>
-                        <td>{{ $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->format('h:i A') : '-' }}</td>
-                        <td>{{ $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->format('h:i A') : '-' }}</td>
+                        <td>{{ $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->gymTimeFormat() : '-' }}</td>
+                        <td>{{ $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->gymTimeFormat() : '-' }}</td>
                     </tr>
                 @empty
                     <tr>

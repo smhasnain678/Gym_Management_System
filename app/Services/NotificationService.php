@@ -39,7 +39,7 @@ class NotificationService
                     'notifiable_type' => MemberMembership::class,
                     'notifiable_id'   => $membership->id,
                     'title'           => 'Membership Expiring Soon',
-                    'message'         => "Membership for {$membership->member->name} expires on " . Carbon::parse($membership->end_date)->format('M d, Y') . ".",
+                    'message'         => "Membership for {$membership->member->name} expires on " . Carbon::parse($membership->end_date)->gymDateFormat() . ".",
                     'is_read'         => false,
                 ]);
             }

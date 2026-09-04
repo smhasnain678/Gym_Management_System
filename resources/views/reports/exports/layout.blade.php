@@ -27,7 +27,7 @@
     </div>
 
     <div class="meta">
-        <strong>Generated on:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->format('M d, Y h:i A') }}<br>
+        <strong>Generated on:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}<br>
         @yield('filters')
     </div>
 

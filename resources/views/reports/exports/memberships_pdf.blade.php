@@ -36,8 +36,8 @@
                     <td>{{ $membership->member->name }}</td>
                     <td>{{ $membership->membershipPlan->name }}</td>
                     <td>
-                        Start: {{ $membership->start_date->format('M d, Y') }}<br>
-                        End: {{ $membership->end_date->format('M d, Y') }}
+                        Start: {{ $membership->start_date->gymDateFormat() }}<br>
+                        End: {{ $membership->end_date->gymDateFormat() }}
                     </td>
                     <td>{{ $membership->status }}</td>
                     <td>

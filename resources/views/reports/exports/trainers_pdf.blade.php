@@ -34,7 +34,7 @@
                     <td>{{ $trainer->name }}</td>
                     <td>{{ $trainer->specialization }}</td>
                     <td>{{ $trainer->phone }}</td>
-                    <td>{{ $trainer->joining_date->format('M d, Y') }}</td>
+                    <td>{{ $trainer->joining_date->gymDateFormat() }}</td>
                     <td>{{ $trainer->members_count ?? 0 }}</td>
                     <td>{{ $trainer->is_active ? 'Active' : 'Inactive' }}</td>
                 </tr>

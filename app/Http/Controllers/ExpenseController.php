@@ -107,7 +107,7 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('expenses.index')
-            ->with('success', 'Expense recorded successfully.');
+            ->with('success', __('Expense recorded successfully.'));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -156,7 +156,7 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('expenses.index')
-            ->with('success', 'Expense updated successfully.');
+            ->with('success', __('Expense updated successfully.'));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -184,6 +184,6 @@ class ExpenseController extends Controller
 
         return redirect()
             ->route('expenses.index')
-            ->with('success', 'Expense deleted successfully.');
+            ->with('success', __('Expense deleted successfully.'));
     }
 }

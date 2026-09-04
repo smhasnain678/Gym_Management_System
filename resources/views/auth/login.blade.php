@@ -1,12 +1,12 @@
 @extends('layouts.guest')
 
-@section('title', 'Login')
-@section('meta_description', 'Sign in to your WarmUp Gym Management Dashboard.')
+@section('title', __('Login'))
+@section('meta_description', __('Sign in to your WarmUp Gym Management Dashboard.'))
 
 @section('content')
 <div>
-    <h2 class="text-2xl font-bold mb-1" style="color: #111827;">Welcome back!</h2>
-    <p class="text-sm mb-6" style="color: #6B7280;">Sign in to your gym dashboard.</p>
+    <h2 class="text-2xl font-bold mb-1" style="color: #111827;">{{ __('Welcome back!') }}</h2>
+    <p class="text-sm mb-6" style="color: #6B7280;">{{ __('Sign in to your gym dashboard.') }}</p>
 
     {{-- Session Errors --}}
     @if ($errors->any())
@@ -40,7 +40,7 @@
         {{-- Email --}}
         <div class="mb-4">
             <label for="email" class="block text-sm font-medium mb-1.5" style="color: #374151;">
-                Email Address
+                {{ __('Email Address') }}
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -54,7 +54,7 @@
                        value="{{ old('email') }}"
                        required
                        autocomplete="email"
-                       placeholder="owner@mygym.com"
+                       placeholder="{{ __('owner@mygym.com') }}"
                        class="w-full pl-10 pr-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent
                               {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50 hover:border-gray-300' }}"
                        style="--tw-ring-color: #22C55E;">
@@ -64,7 +64,7 @@
         {{-- Password --}}
         <div class="mb-4">
             <label for="password" class="block text-sm font-medium mb-1.5" style="color: #374151;">
-                Password
+                {{ __('Password') }}
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -102,12 +102,12 @@
                        id="remember"
                        class="w-4 h-4 rounded border-gray-300 text-green-500"
                        style="accent-color: #22C55E;">
-                <span class="text-sm" style="color: #6B7280;">Remember me</span>
+                <span class="text-sm" style="color: #6B7280;">{{ __('Remember me') }}</span>
             </label>
             <a href="{{ route('password.request') }}"
                class="text-sm font-medium hover:underline"
                style="color: #22C55E;">
-                Forgot password?
+                {{ __('Forgot password?') }}
             </a>
         </div>
 
@@ -120,7 +120,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
             </svg>
-            Sign In to Dashboard
+            {{ __('Sign In to Dashboard') }}
         </button>
     </form>
 </div>

@@ -43,7 +43,7 @@
             <div>
                 <strong>Date Range:</strong> 
                 @if($request->start_date && $request->end_date)
-                    {{ \Carbon\Carbon::parse($request->start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($request->end_date)->format('M d, Y') }}
+                    {{ \Carbon\Carbon::parse($request->start_date)->gymDateFormat() }} - {{ \Carbon\Carbon::parse($request->end_date)->gymDateFormat() }}
                 @elseif($request->month)
                     {{ \Carbon\Carbon::parse($request->month)->format('F Y') }}
                 @else
@@ -51,7 +51,7 @@
                 @endif
             </div>
             <div>
-                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->format('M d, Y h:i A') }}
+                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
             </div>
         </div>
 
@@ -79,7 +79,7 @@
             <tbody>
                 @forelse($payments as $payment)
                     <tr>
-                        <td>{{ $payment->payment_date->format('M d, Y') }}</td>
+                        <td>{{ $payment->payment_date->gymDateFormat() }}</td>
                         <td><strong>{{ $payment->member->name }}</strong></td>
                         <td>{{ $payment->memberMembership->membershipPlan->name ?? 'N/A' }}</td>
                         <td style="font-weight: bold;">${{ number_format($payment->amount_paid, 2) }}</td>

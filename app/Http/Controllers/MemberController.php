@@ -170,7 +170,7 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.show', $member)
-            ->with('success', 'Member "' . $member->name . '" registered successfully.');
+            ->with('success', __('Member ":name" registered successfully.', ['name' => $member->name]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -255,7 +255,7 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.show', $member)
-            ->with('success', 'Member "' . $member->name . '" updated successfully.');
+            ->with('success', __('Member ":name" updated successfully.', ['name' => $member->name]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -283,7 +283,7 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.index')
-            ->with('success', 'Member "' . $name . '" has been removed.');
+            ->with('success', __('Member ":name" has been removed.', ['name' => $name]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -336,7 +336,7 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.show', $member)
-            ->with('success', 'Membership plan "' . $plan->name . '" assigned successfully.');
+            ->with('success', __('Membership plan ":name" assigned successfully.', ['name' => $plan->name]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -400,7 +400,7 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.show', $member)
-            ->with('success', 'Membership renewed with plan "' . $plan->name . '".');
+            ->with('success', __('Membership renewed with plan ":name".', ['name' => $plan->name]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -456,7 +456,7 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.show', $member)
-            ->with('success', 'Payment of ' . number_format($validated['amount_paid'], 2) . ' recorded successfully.');
+            ->with('success', __('Payment of :amount recorded successfully.', ['amount' => number_format($validated['amount_paid'], 2)]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -472,6 +472,6 @@ class MemberController extends Controller
 
         return redirect()
             ->route('members.show', $member)
-            ->with('success', 'Member "' . $member->name . '" status changed to ' . $label . '.');
+            ->with('success', __('Member ":name" status changed to :status.', ['name' => $member->name, 'status' => $label]));
     }
 }

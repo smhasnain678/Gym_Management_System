@@ -49,7 +49,7 @@
                 <strong>Member:</strong> {{ $member->name }}
             </div>
             <div>
-                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->format('M d, Y h:i A') }}
+                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
             </div>
         </div>
 
@@ -75,11 +75,11 @@
                 </div>
                 <div class="info-item">
                     <div class="info-label">Date of Birth</div>
-                    <div class="info-value">{{ $member->date_of_birth ? $member->date_of_birth->format('M d, Y') : '-' }}</div>
+                    <div class="info-value">{{ $member->date_of_birth ? $member->date_of_birth->gymDateFormat() : '-' }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Joining Date</div>
-                    <div class="info-value">{{ $member->joining_date->format('M d, Y') }}</div>
+                    <div class="info-value">{{ $member->joining_date->gymDateFormat() }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Blood Group</div>
@@ -188,8 +188,8 @@
                         @foreach($member->memberships as $membership)
                             <tr>
                                 <td>{{ $membership->membershipPlan->name ?? '-' }}</td>
-                                <td>{{ $membership->start_date->format('M d, Y') }}</td>
-                                <td>{{ $membership->end_date->format('M d, Y') }}</td>
+                                <td>{{ $membership->start_date->gymDateFormat() }}</td>
+                                <td>{{ $membership->end_date->gymDateFormat() }}</td>
                                 <td>{{ $membership->status }}</td>
                                 <td>${{ number_format($membership->total_amount, 2) }}</td>
                                 <td>${{ number_format($membership->paid_amount, 2) }}</td>

@@ -42,6 +42,6 @@ class ExpenseCategoryController extends Controller
 
         return redirect()
             ->route('expenses.index', ['month' => $request->input('month', now()->format('Y-m'))])
-            ->with('success', __('Category \\\"{$category->name}\\\" added successfully.'));
+            ->with('success', __('Category ":name" added successfully.', ['name' => $category->name]));
     }
 }

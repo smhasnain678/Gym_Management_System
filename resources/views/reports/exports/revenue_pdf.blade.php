@@ -33,7 +33,7 @@
         <tbody>
             @foreach($payments as $payment)
                 <tr>
-                    <td>{{ $payment->payment_date->format('M d, Y') }}</td>
+                    <td>{{ $payment->payment_date->gymDateFormat() }}</td>
                     <td>{{ $payment->member->name }}</td>
                     <td>{{ $payment->memberMembership->membershipPlan->name ?? 'N/A' }}</td>
                     <td>${{ number_format($payment->amount_paid, 2) }}</td>

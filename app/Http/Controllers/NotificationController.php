@@ -31,7 +31,7 @@ class NotificationController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return back()->with('success', 'Notification marked as read.');
+        return back()->with('success', __('Notification marked as read.'));
     }
 
     /**
@@ -48,7 +48,7 @@ class NotificationController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return back()->with('success', 'All notifications marked as read.');
+        return back()->with('success', __('All notifications marked as read.'));
     }
 
     /**

@@ -34,7 +34,7 @@ class RevenueExport implements FromCollection, WithHeadings, WithMapping
     public function map($payment): array
     {
         return [
-            $payment->payment_date->format('Y-m-d'),
+            $payment->payment_date->gymDateFormat(),
             $payment->member->name,
             $payment->memberMembership->membershipPlan->name ?? 'N/A',
             $payment->amount_paid,

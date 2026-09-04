@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Notifications')
-@section('meta_description', 'View all system notifications.')
-@section('page_title', 'Notifications')
+@section('title', __('Notifications'))
+@section('meta_description', __('View all system notifications.'))
+@section('page_title', __('Notifications'))
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
 
     {{-- Header --}}
     <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">Your Notifications</h2>
+        <h2 class="text-xl font-bold text-gray-900">{{ __('Your Notifications') }}</h2>
         <form method="POST" action="{{ route('notifications.mark-all-read') }}">
             @csrf
             <button type="submit" class="text-sm font-medium text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-xl transition-colors">
-                Mark all as read
+                {{ __('Mark all as read') }}
             </button>
         </form>
     </div>
@@ -25,8 +25,8 @@
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style="background-color:#F3F4F6;">
                     <i data-lucide="bell" class="w-8 h-8" style="color:#6B7280;"></i>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-1">No notifications</h3>
-                <p class="text-gray-500 text-sm max-w-sm">You are all caught up!</p>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">{{ __('No notifications') }}</h3>
+                <p class="text-gray-500 text-sm max-w-sm">{{ __('You are all caught up!') }}</p>
             </div>
         @else
             <div class="divide-y divide-gray-100">
@@ -52,7 +52,7 @@
                                 <div class="text-xs text-gray-400 mt-2 space-y-1">
                                     <div class="flex items-center gap-1">
                                         <i data-lucide="calendar" class="w-3 h-3"></i>
-                                        <span>{{ $notification->created_at->format('M d, Y, g:i A') }}</span>
+                                        <span>{{ $notification->created_at->gymDateTimeFormat() }}</span>
                                     </div>
                                     <div class="flex items-center gap-1">
                                         <i data-lucide="clock" class="w-3 h-3"></i>
@@ -65,7 +65,7 @@
                                     <form method="POST" action="{{ route('notifications.mark-read', $notification) }}">
                                         @csrf
                                         <button type="submit" class="text-xs font-medium text-gray-500 hover:text-green-600 border border-gray-200 hover:border-green-200 bg-white hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors">
-                                            Mark read
+                                            {{ __('Mark read') }}
                                         </button>
                                     </form>
                                 </div>

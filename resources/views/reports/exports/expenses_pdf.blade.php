@@ -32,7 +32,7 @@
         <tbody>
             @foreach($expensesList as $expense)
                 <tr>
-                    <td>{{ $expense->expense_date->format('M d, Y') }}</td>
+                    <td>{{ $expense->expense_date->gymDateFormat() }}</td>
                     <td>{{ $expense->title }}</td>
                     <td>{{ $expense->expenseCategory->name ?? '-' }}</td>
                     <td>${{ number_format($expense->amount, 2) }}</td>

@@ -72,7 +72,7 @@ class MembershipPlanController extends Controller
 
         return redirect()
             ->route('membership-plans.index')
-            ->with('success', 'Membership plan "' . $validated['name'] . '" created successfully.');
+            ->with('success', __('Membership plan ":name" created successfully.', ['name' => $validated['name']]));
     }
 
     /**
@@ -111,7 +111,7 @@ class MembershipPlanController extends Controller
 
         return redirect()
             ->route('membership-plans.index')
-            ->with('success', 'Membership plan "' . $membershipPlan->name . '" updated successfully.');
+            ->with('success', __('Membership plan ":name" updated successfully.', ['name' => $membershipPlan->name]));
     }
 
     /**
@@ -122,7 +122,7 @@ class MembershipPlanController extends Controller
         if ($membershipPlan->memberMemberships()->exists()) {
             return redirect()
                 ->route('membership-plans.index')
-                ->with('error', 'Cannot delete "' . $membershipPlan->name . '" — it is assigned to one or more members. Please deactivate it instead.');
+                ->with('error', __('Cannot delete ":name" - it is assigned to one or more members. Please deactivate it instead.', ['name' => $membershipPlan->name]));
         }
 
         $name = $membershipPlan->name;
@@ -130,7 +130,7 @@ class MembershipPlanController extends Controller
 
         return redirect()
             ->route('membership-plans.index')
-            ->with('success', 'Membership plan "' . $name . '" deleted successfully.');
+            ->with('success', __('Membership plan ":name" deleted successfully.', ['name' => $name]));
     }
 
     /**
@@ -144,6 +144,6 @@ class MembershipPlanController extends Controller
 
         return redirect()
             ->route('membership-plans.index')
-            ->with('success', 'Membership plan "' . $membershipPlan->name . '" ' . $status . ' successfully.');
+            ->with('success', __('Membership plan ":name" :status successfully.', ['name' => $membershipPlan->name, 'status' => $status]));
     }
 }

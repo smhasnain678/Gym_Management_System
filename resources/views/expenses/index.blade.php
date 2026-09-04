@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Expense Management')
-@section('meta_description', 'Manage gym expenses, track monthly spending, and view category breakdowns.')
-@section('page_title', 'Expense Management')
+@section('title', __('Expense Management'))
+@section('meta_description', __('Manage gym expenses, track monthly spending, and view category breakdowns.'))
+@section('page_title', __('Expense Management'))
 
 @section('content')
 
 {{-- ── Header & Add Button ────────────────────────────────────────────────── --}}
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div class="flex items-center gap-2 text-gray-900">
-        <h2 class="text-xl font-bold">Expenses</h2>
+        <h2 class="text-xl font-bold">{{ __('Expenses') }}</h2>
         <span class="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
             {{ \Carbon\Carbon::parse($month . '-01')->format('F Y') }}
         </span>
@@ -22,7 +22,7 @@
         </form>
         <a href="{{ route('expenses.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium shadow-sm hover:opacity-90 transition-colors" style="background-color:#22C55E;">
             <i data-lucide="plus" class="w-4 h-4"></i>
-            Add Expense
+            {{ __('Add Expense') }}
         </a>
     </div>
 </div>
@@ -32,7 +32,7 @@
     
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
         <div>
-            <p class="text-sm text-gray-500 font-medium">Total Expenses</p>
+            <p class="text-sm text-gray-500 font-medium">{{ __('Total Expenses') }}</p>
             <p class="text-2xl font-bold text-gray-900 mt-1">{{ number_format($totalMonthlyExpenses, 2) }}</p>
         </div>
         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background-color:#FEE2E2; color:#EF4444;">
@@ -42,7 +42,7 @@
 
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
         <div>
-            <p class="text-sm text-gray-500 font-medium">Recorded Items</p>
+            <p class="text-sm text-gray-500 font-medium">{{ __('Recorded Items') }}</p>
             <p class="text-2xl font-bold text-gray-900 mt-1">{{ $expenseCount }}</p>
         </div>
         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background-color:#EFF6FF; color:#3B82F6;">
@@ -52,7 +52,7 @@
 
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
         <div>
-            <p class="text-sm text-gray-500 font-medium">Top Category</p>
+            <p class="text-sm text-gray-500 font-medium">{{ __('Top Category') }}</p>
             @if($categoryBreakdown->count() > 0)
                 <p class="text-2xl font-bold text-gray-900 mt-1">{{ $categoryBreakdown->first()->name }}</p>
                 <p class="text-xs text-gray-400 mt-1">{{ number_format($categoryBreakdown->first()->total, 2) }}</p>
@@ -77,20 +77,20 @@
                 <input type="hidden" name="month" value="{{ request('month', $month) }}">
                 <div class="relative flex-1 min-w-[200px]">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search title or recipient..."
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search title or recipient...') }}"
                            class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:border-transparent"
                            style="--tw-ring-color: #22C55E;">
                 </div>
                 <select name="category" onchange="this.form.submit()"
                         class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none min-w-[150px]">
-                    <option value="all">All Categories</option>
+                    <option value="all">{{ __('All Categories') }}</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="px-4 py-2 rounded-xl text-white text-sm font-medium" style="background-color:#22C55E;">Search</button>
+                <button type="submit" class="px-4 py-2 rounded-xl text-white text-sm font-medium" style="background-color:#22C55E;">{{ __('Search') }}</button>
                 @if(request()->hasAny(['search', 'category']) && (request('search') != '' || request('category') != 'all'))
-                    <a href="{{ route('expenses.index', ['month' => $month]) }}" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-200">Clear</a>
+                    <a href="{{ route('expenses.index', ['month' => $month]) }}" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-200">{{ __('Clear') }}</a>
                 @endif
             </form>
         </div>
@@ -99,18 +99,18 @@
             <table class="w-full text-left text-sm whitespace-nowrap">
                 <thead class="bg-gray-50 border-b border-gray-200 text-gray-500">
                     <tr>
-                        <th class="px-6 py-4 font-medium">Date</th>
-                        <th class="px-6 py-4 font-medium">Title</th>
-                        <th class="px-6 py-4 font-medium">Category</th>
-                        <th class="px-6 py-4 font-medium">Paid To</th>
-                        <th class="px-6 py-4 font-medium text-right">Amount</th>
-                        <th class="px-6 py-4 font-medium text-right">Actions</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Date') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Title') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Category') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Paid To') }}</th>
+                        <th class="px-6 py-4 font-medium text-right">{{ __('Amount') }}</th>
+                        <th class="px-6 py-4 font-medium text-right">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($expenses as $expense)
                     <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4 text-gray-600">{{ $expense->expense_date->format('d M Y') }}</td>
+                        <td class="px-6 py-4 text-gray-600">{{ $expense->expense_date->gymDateFormat() }}</td>
                         <td class="px-6 py-4">
                             <p class="font-medium text-gray-900">{{ $expense->title }}</p>
                             @if($expense->notes)
@@ -129,7 +129,7 @@
                                 <a href="{{ route('expenses.edit', $expense) }}" class="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
                                     <i data-lucide="edit-2" class="w-4 h-4"></i>
                                 </a>
-                                <form action="{{ route('expenses.destroy', $expense) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this expense?');">
+                                <form action="{{ route('expenses.destroy', $expense) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete this expense?') }}');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
@@ -144,8 +144,8 @@
                         <td colspan="6" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <i data-lucide="receipt" class="w-8 h-8 text-gray-300 mb-3"></i>
-                                <p class="font-medium text-gray-900">No expenses recorded for this month.</p>
-                                <a href="{{ route('expenses.create') }}" class="text-sm font-medium mt-2" style="color:#22C55E;">Record your first expense</a>
+                                <p class="font-medium text-gray-900">{{ __('No expenses recorded for this month.') }}</p>
+                                <a href="{{ route('expenses.create') }}" class="text-sm font-medium mt-2" style="color:#22C55E;">{{ __('Record your first expense') }}</a>
                             </div>
                         </td>
                     </tr>
@@ -164,13 +164,13 @@
             <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                 <h3 class="text-base font-semibold text-gray-900 flex items-center gap-2">
                     <i data-lucide="pie-chart" class="w-5 h-5" style="color:#22C55E;"></i>
-                    Category Breakdown
+                    {{ __('Category Breakdown') }}
                 </h3>
                 <button type="button" onclick="openAddCategoryModal()"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors hover:opacity-90"
                         style="background-color:#22C55E;">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    Add Category
+                    {{ __('Add Category') }}
                 </button>
             </div>
             <div class="p-6">
@@ -192,7 +192,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-sm text-gray-500 text-center py-4">No data available for this month.</p>
+                    <p class="text-sm text-gray-500 text-center py-4">{{ __('No data available for this month.') }}</p>
                 @endif
             </div>
         </div>
@@ -206,7 +206,7 @@
 <div id="add-category-modal" class="hidden fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 class="text-lg font-bold text-gray-900">Add Expense Category</h3>
+            <h3 class="text-lg font-bold text-gray-900">{{ __('Add Expense Category') }}</h3>
             <button type="button" onclick="closeAddCategoryModal()" class="text-gray-400 hover:text-gray-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
@@ -225,7 +225,7 @@
 
             <div>
                 <label for="category-name" class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Category Name <span class="text-red-500">*</span>
+                    {{ __('Category Name') }} <span class="text-red-500">*</span>
                 </label>
                 <input type="text"
                        id="category-name"
@@ -235,18 +235,18 @@
                        maxlength="100"
                        autofocus
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white text-gray-900 text-sm"
-                       placeholder="e.g. Electricity">
+                       placeholder="{{ __('e.g. Electricity') }}">
             </div>
 
             <div class="pt-2 flex justify-end gap-3 border-t border-gray-100">
                 <button type="button" onclick="closeAddCategoryModal()"
                         class="px-5 py-2.5 text-sm font-semibold rounded-xl border-2 border-gray-300 bg-white hover:bg-gray-50 transition-colors text-gray-700">
-                    Cancel
+                    {{ __('Cancel') }}
                 </button>
                 <button type="submit"
                         class="px-5 py-2.5 text-sm font-semibold text-white rounded-xl shadow-sm hover:opacity-90 transition-all active:scale-95"
                         style="background-color:#22C55E;">
-                    Add Category
+                    {{ __('Add Category') }}
                 </button>
             </div>
         </form>

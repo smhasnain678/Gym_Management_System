@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Fee Collection Report')
-@section('page_title', 'Fee Collection Report')
+@section('title', __('Fee Collection Report'))
+@section('page_title', __('Fee Collection Report'))
 
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
@@ -10,29 +10,29 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <form method="GET" action="{{ route('reports.fees') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date') }}</label>
                 <input type="date" name="start_date" value="{{ request('start_date') }}" class="report-filter-input">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('End Date') }}</label>
                 <input type="date" name="end_date" value="{{ request('end_date') }}" class="report-filter-input">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Specific Month</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Specific Month') }}</label>
                 <input type="month" name="month" value="{{ request('month') }}" class="report-filter-input">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Payment Method') }}</label>
                 <select name="payment_method" class="report-filter-input">
-                    <option value="">All Methods</option>
-                    <option value="Cash" {{ request('payment_method') == 'Cash' ? 'selected' : '' }}>Cash</option>
-                    <option value="Card" {{ request('payment_method') == 'Card' ? 'selected' : '' }}>Card</option>
-                    <option value="Online Transfer" {{ request('payment_method') == 'Online Transfer' ? 'selected' : '' }}>Online Transfer</option>
+                    <option value="">{{ __('All Methods') }}</option>
+                    <option value="Cash" {{ request('payment_method') == 'Cash' ? 'selected' : '' }}>{{ __('Cash') }}</option>
+                    <option value="Card" {{ request('payment_method') == 'Card' ? 'selected' : '' }}>{{ __('Card') }}</option>
+                    <option value="Online Transfer" {{ request('payment_method') == 'Online Transfer' ? 'selected' : '' }}>{{ __('Online Transfer') }}</option>
                 </select>
             </div>
             <div class="md:col-span-4 flex justify-end gap-2 mt-2">
-                <a href="{{ route('reports.fees') }}" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium">Reset</a>
-                <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium">Filter</button>
+                <a href="{{ route('reports.fees') }}" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium">{{ __('Reset') }}</a>
+                <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium">{{ __('Filter') }}</button>
             </div>
         </form>
     </div>
@@ -44,7 +44,7 @@
                 <i data-lucide="wallet" class="w-6 h-6"></i>
             </div>
             <div>
-                <p class="text-sm font-medium text-gray-500">Total Collected</p>
+                <p class="text-sm font-medium text-gray-500">{{ __('Total Collected') }}</p>
                 <p class="text-2xl font-bold text-gray-900">${{ number_format($totalCollected, 2) }}</p>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 <i data-lucide="receipt" class="w-6 h-6"></i>
             </div>
             <div>
-                <p class="text-sm font-medium text-gray-500">Payments Count</p>
+                <p class="text-sm font-medium text-gray-500">{{ __('Payments Count') }}</p>
                 <p class="text-2xl font-bold text-gray-900">{{ $paymentsCount }}</p>
             </div>
         </div>
@@ -62,7 +62,7 @@
     <!-- Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h3 class="text-lg font-bold text-gray-900">Fee Collection History</h3>
+            <h3 class="text-lg font-bold text-gray-900">{{ __('Fee Collection History') }}</h3>
             
             <div class="flex gap-2">
                 <a href="{{ route('reports.fees', array_merge(request()->all(), ['export' => 'pdf'])) }}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-colors text-sm font-medium">
@@ -78,20 +78,20 @@
             <table class="w-full text-left text-sm whitespace-nowrap">
                 <thead class="bg-gray-50 text-gray-500">
                     <tr>
-                        <th class="px-6 py-4 font-medium">Payment Date</th>
-                        <th class="px-6 py-4 font-medium">Member</th>
-                        <th class="px-6 py-4 font-medium">Membership</th>
-                        <th class="px-6 py-4 font-medium">Amount</th>
-                        <th class="px-6 py-4 font-medium">Method</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Payment Date') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Member') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Membership') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Amount') }}</th>
+                        <th class="px-6 py-4 font-medium">{{ __('Method') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($payments as $payment)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4">
-                                <div class="text-gray-900">{{ $payment->payment_date->format('M d, Y') }}</div>
+                                <div class="text-gray-900">{{ $payment->payment_date->gymDateFormat() }}</div>
                                 @if($payment->receipt_number)
-                                    <div class="text-xs text-gray-500">Rec: {{ $payment->receipt_number }}</div>
+                                    <div class="text-xs text-gray-500">{{ __('Rec:') }} {{ $payment->receipt_number }}</div>
                                 @endif
                             </td>
                             <td class="px-6 py-4 font-medium text-gray-900">{{ $payment->member->name }}</td>
@@ -104,7 +104,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                                <p>No fee collections found.</p>
+                                <p>{{ __('No fee collections found.') }}</p>
                             </td>
                         </tr>
                     @endforelse

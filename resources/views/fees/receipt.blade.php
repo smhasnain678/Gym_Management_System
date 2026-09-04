@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Fee Receipt #{{ $payment->id }} — WarmUp</title>
+    <title>{{ __('Fee Receipt') }} #{{ $payment->id }} — WarmUp</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Arial, sans-serif; color: #111827; background: #fff; font-size: 13px; }
@@ -42,9 +42,9 @@
 
 <div class="no-print" style="background:#f3f4f6; padding:12px; text-align:center; border-bottom:1px solid #e5e7eb;">
     <button onclick="window.print()" style="background:#22C55E; color:white; border:none; padding:10px 24px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; margin-right:8px;">
-        🖨️ Print Receipt
+        🖨️ {{ __('Print Receipt') }}
     </button>
-    <a href="{{ route('fees.index') }}" style="color:#6B7280; font-size:13px;">← Back to Fee Management</a>
+    <a href="{{ route('fees.index') }}" style="color:#6B7280; font-size:13px;">← {{ __('Back to Fee Management') }}</a>
 </div>
 
 <div class="page">
@@ -59,46 +59,46 @@
                     @if($gymSettings->contact_email) {{ $gymSettings->contact_email }}@endif
                 </div>
             @else
-                <div class="gym-info">Gym Management System</div>
+                <div class="gym-info">{{ __('Gym Management System') }}</div>
             @endif
         </div>
         <div class="receipt-label">
-            <h2>PAYMENT RECEIPT</h2>
-            <p>Receipt #{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</p>
-            <p>{{ $payment->payment_date->format('d M Y') }}</p>
+            <h2>{{ __('PAYMENT RECEIPT') }}</h2>
+            <p>{{ __('Receipt') }} #{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</p>
+            <p>{{ $payment->payment_date->gymDateFormat() }}</p>
         </div>
     </div>
 
     {{-- Payment Highlight --}}
     <div class="highlight">
-        <div class="amount-paid-label">Amount Paid</div>
+        <div class="amount-paid-label">{{ __('Amount Paid') }}</div>
         <div class="amount-paid">
             {{ $gymSettings?->currency_symbol ?? '' }}{{ number_format($payment->amount_paid, 2) }}
         </div>
         <div style="color:rgba(255,255,255,0.8); font-size:12px; margin-top:4px;">
-            via <span class="method-badge" style="background:rgba(255,255,255,0.2); color:white;">{{ str_replace('_', ' ', $payment->payment_method ?? 'Cash') }}</span>
-            &nbsp;on {{ $payment->payment_date->format('d M Y') }}
+            {{ __('via') }} <span class="method-badge" style="background:rgba(255,255,255,0.2); color:white;">{{ str_replace('_', ' ', $payment->payment_method ?? 'Cash') }}</span>
+            &nbsp;{{ __('on') }} {{ $payment->payment_date->gymDateFormat() }}
         </div>
     </div>
 
     {{-- Member Info --}}
     <div class="section">
-        <div class="section-title">Member Information</div>
+        <div class="section-title">{{ __('Member Information') }}</div>
         <div class="info-grid">
             <div class="info-item">
-                <label>Member Name</label>
+                <label>{{ __('Member Name') }}</label>
                 <p>{{ $payment->member->name }}</p>
             </div>
             <div class="info-item">
-                <label>Member ID</label>
+                <label>{{ __('Member ID') }}</label>
                 <p>#{{ str_pad($payment->member->id, 5, '0', STR_PAD_LEFT) }}</p>
             </div>
             <div class="info-item">
-                <label>Phone</label>
+                <label>{{ __('Phone') }}</label>
                 <p>{{ $payment->member->phone }}</p>
             </div>
             <div class="info-item">
-                <label>Membership Plan</label>
+                <label>{{ __('Membership Plan') }}</label>
                 <p>{{ $payment->memberMembership?->membershipPlan?->name ?? '—' }}</p>
             </div>
         </div>
@@ -107,38 +107,38 @@
     {{-- Balance Info --}}
     @if($payment->memberMembership)
     <div class="section">
-        <div class="section-title">Membership Balance</div>
+        <div class="section-title">{{ __('Membership Balance') }}</div>
         <div class="amount-box">
             <div class="total">
-                <div class="label">Total Fee</div>
+                <div class="label">{{ __('Total Fee') }}</div>
                 <div class="value">{{ number_format($payment->memberMembership->total_amount, 2) }}</div>
             </div>
             <div class="paid">
-                <div class="label">Total Paid</div>
+                <div class="label">{{ __('Total Paid') }}</div>
                 <div class="value">{{ number_format($payment->memberMembership->paid_amount, 2) }}</div>
             </div>
             <div class="remaining">
-                <div class="label">Remaining</div>
+                <div class="label">{{ __('Remaining') }}</div>
                 <div class="value">{{ number_format($payment->memberMembership->remaining_amount, 2) }}</div>
             </div>
         </div>
         <div style="margin-top:10px; font-size:12px; color:#6B7280; text-align:center;">
-            Membership Period: {{ $payment->memberMembership->start_date->format('d M Y') }} — {{ $payment->memberMembership->end_date->format('d M Y') }}
+            {{ __('Membership Period:') }} {{ $payment->memberMembership->start_date->gymDateFormat() }} — {{ $payment->memberMembership->end_date->gymDateFormat() }}
         </div>
     </div>
     @endif
 
     @if($payment->notes)
     <div class="section">
-        <div class="section-title">Notes</div>
+        <div class="section-title">{{ __('Notes') }}</div>
         <p style="color:#374151; font-size:13px;">{{ $payment->notes }}</p>
     </div>
     @endif
 
     <div class="footer">
-        <p>Thank you for your payment!</p>
-        <p style="margin-top:4px;">This is a computer-generated receipt. No signature required.</p>
-        <p style="margin-top:4px;">Generated on {{ now()->format('d M Y, h:i A') }}</p>
+        <p>{{ __('Thank you for your payment!') }}</p>
+        <p style="margin-top:4px;">{{ __('This is a computer-generated receipt. No signature required.') }}</p>
+        <p style="margin-top:4px;">{{ __('Generated on') }} {{ now()->gymDateTimeFormat() }}</p>
     </div>
 </div>
 

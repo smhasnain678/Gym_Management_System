@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Membership Plans')
-@section('meta_description', 'Manage membership plan templates for your gym.')
-@section('page_title', 'Membership Plans')
+@section('title', __('Membership Plans'))
+@section('meta_description', __('Manage membership plan templates for your gym.'))
+@section('page_title', __('Membership Plans'))
 
 @section('content')
 <div class="space-y-6">
@@ -10,9 +10,9 @@
     {{-- ── Header row ────────────────────────────────────────────────────── --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold" style="color:#111827;">Plan Templates</h2>
+            <h2 class="text-2xl font-bold" style="color:#111827;">{{ __('Plan Templates') }}</h2>
             <p class="text-sm mt-0.5" style="color:#6B7280;">
-                Create and manage reusable membership plan templates. Assign them to members later.
+                {{ __('Create and manage reusable membership plan templates. Assign them to members later.') }}
             </p>
         </div>
         <a href="{{ route('membership-plans.create') }}"
@@ -21,7 +21,7 @@
                   transition-all duration-200 hover:shadow-md active:scale-95 flex-shrink-0"
            style="background-color:#22C55E;">
             <i data-lucide="plus" class="w-4 h-4"></i>
-            Add Plan
+            {{ __('Add Plan') }}
         </a>
     </div>
 
@@ -35,7 +35,7 @@
                    id="search-plans"
                    name="search"
                    value="{{ request('search') }}"
-                   placeholder="Search plans…"
+                   placeholder="{{ __('Search plans…') }}"
                    class="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl
                           focus:outline-none focus:ring-2 focus:border-transparent"
                    style="--tw-ring-color:#22C55E;">
@@ -47,9 +47,9 @@
                 class="px-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl
                        focus:outline-none focus:ring-2 focus:border-transparent"
                 style="--tw-ring-color:#22C55E; color:#374151;">
-            <option value="">All Statuses</option>
-            <option value="active"   {{ request('status') === 'active'   ? 'selected' : '' }}>Active</option>
-            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+            <option value="">{{ __('All Statuses') }}</option>
+            <option value="active"   {{ request('status') === 'active'   ? 'selected' : '' }}>{{ __('Active') }}</option>
+            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
         </select>
 
         @if(request('search') || request('status'))
@@ -57,14 +57,14 @@
                class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm text-gray-500
                       bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
                 <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                Clear
+                {{ __('Clear') }}
             </a>
         @endif
 
         <button type="submit"
                 class="px-4 py-2.5 text-sm font-medium text-white rounded-xl transition-colors"
                 style="background-color:#22C55E;">
-            Search
+            {{ __('Search') }}
         </button>
     </form>
 
@@ -76,12 +76,12 @@
                  style="background-color:#F0FDF4;">
                 <i data-lucide="layers" class="w-8 h-8" style="color:#22C55E;"></i>
             </div>
-            <h3 class="text-lg font-semibold mb-1" style="color:#111827;">No plans found</h3>
+            <h3 class="text-lg font-semibold mb-1" style="color:#111827;">{{ __('No plans found') }}</h3>
             <p class="text-sm mb-6" style="color:#6B7280;">
                 @if(request('search') || request('status'))
-                    No plans match your current filters. <a href="{{ route('membership-plans.index') }}" class="underline" style="color:#22C55E;">Clear filters</a>
+                    {{ __('No plans match your current filters.') }} <a href="{{ route('membership-plans.index') }}" class="underline" style="color:#22C55E;">{{ __('Clear filters') }}</a>
                 @else
-                    Get started by creating your first membership plan.
+                    {{ __('Get started by creating your first membership plan.') }}
                 @endif
             </p>
             @if(!request('search') && !request('status'))
@@ -89,7 +89,7 @@
                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
                    style="background-color:#22C55E;">
                     <i data-lucide="plus" class="w-4 h-4"></i>
-                    Create First Plan
+                    {{ __('Create First Plan') }}
                 </a>
             @endif
         </div>
@@ -131,7 +131,7 @@
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium flex-shrink-0"
                                   style="background-color:#F3F4F6; color:#6B7280;">
                                 <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                                Inactive
+                                {{ __('Inactive') }}
                             </span>
                         @endif
                     </div>
@@ -139,23 +139,23 @@
                     {{-- Stats row --}}
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <div class="rounded-xl px-3 py-2.5" style="background-color:#F9FAFB;">
-                            <p class="text-xs font-medium mb-0.5" style="color:#9CA3AF;">Duration</p>
+                            <p class="text-xs font-medium mb-0.5" style="color:#9CA3AF;">{{ __('Duration') }}</p>
                             <p class="text-sm font-semibold" style="color:#111827;">
                                 {{ $plan->duration_days }}
-                                {{ $plan->duration_days == 1 ? 'day' : 'days' }}
+                                {{ $plan->duration_days == 1 ? __('day') : __('days') }}
                                 @if($plan->duration_days >= 365)
                                     <span class="text-xs font-normal" style="color:#6B7280;">
-                                        ({{ number_format($plan->duration_days / 365, 1) }} yr)
+                                        ({{ number_format($plan->duration_days / 365, 1) }} {{ __('yr') }})
                                     </span>
                                 @elseif($plan->duration_days >= 30)
                                     <span class="text-xs font-normal" style="color:#6B7280;">
-                                        (~{{ round($plan->duration_days / 30) }} mo)
+                                        (~{{ round($plan->duration_days / 30) }} {{ __('mo') }})
                                     </span>
                                 @endif
                             </p>
                         </div>
                         <div class="rounded-xl px-3 py-2.5" style="background-color:#F9FAFB;">
-                            <p class="text-xs font-medium mb-0.5" style="color:#9CA3AF;">Price</p>
+                            <p class="text-xs font-medium mb-0.5" style="color:#9CA3AF;">{{ __('Price') }}</p>
                             <p class="text-sm font-semibold" style="color:#111827;">
                                 {{ number_format($plan->price, 2) }}
                             </p>
@@ -173,8 +173,8 @@
 
                     {{-- Footer meta --}}
                     <div class="flex items-center justify-between text-xs mb-4" style="color:#9CA3AF;">
-                        <span>Sort order: {{ $plan->sort_order }}</span>
-                        <span>{{ $plan->member_memberships_count ?? 0 }} assignment(s)</span>
+                        <span>{{ __('Sort order:') }} {{ $plan->sort_order }}</span>
+                        <span>{{ $plan->member_memberships_count ?? 0 }} {{ __('assignment(s)') }}</span>
                     </div>
 
                     {{-- Actions --}}
@@ -188,7 +188,7 @@
                                   bg-white hover:bg-gray-50 transition-colors"
                            style="color:#374151;">
                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                            Edit
+                            {{ __('Edit') }}
                         </a>
 
                         {{-- Toggle status --}}
@@ -204,7 +204,7 @@
                                         ? 'border-color:#FCA5A5; color:#DC2626; background-color:#FFF7F7;'
                                         : 'border-color:#86EFAC; color:#15803D; background-color:#F0FDF4;' }}">
                                 <i data-lucide="{{ $plan->is_active ? 'eye-off' : 'eye' }}" class="w-3.5 h-3.5"></i>
-                                {{ $plan->is_active ? 'Deactivate' : 'Activate' }}
+                                {{ $plan->is_active ? __('Deactivate') : __('Activate') }}
                             </button>
                         </form>
 
@@ -232,9 +232,9 @@
 
         {{-- Summary bar --}}
         <p class="text-xs text-center" style="color:#9CA3AF;">
-            Showing {{ $plans->count() }} plan(s)
+            {{ __('Showing') }} {{ $plans->count() }} {{ __('plan(s)') }}
             @if(request('search') || request('status'))
-                matching your filters
+                {{ __('matching your filters') }}
             @endif
         </p>
     @endif

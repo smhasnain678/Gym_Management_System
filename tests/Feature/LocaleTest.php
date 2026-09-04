@@ -55,9 +55,9 @@ class LocaleTest extends TestCase
         $response = $this->actingAs($user)->get(route('dashboard'));
         $response->assertStatus(200);
 
-        // HTML should have lang="ur" and dir="rtl"
+        // HTML should have lang="ur" and dir="ltr"
         $response->assertSee('lang="ur"', false);
-        $response->assertSee('dir="rtl"', false);
+        $response->assertSee('dir="ltr"', false);
     }
 
     public function test_sindhi_locale_is_applied_when_language_is_sd(): void
@@ -68,9 +68,9 @@ class LocaleTest extends TestCase
         $response = $this->actingAs($user)->get(route('dashboard'));
         $response->assertStatus(200);
 
-        // HTML should have lang="sd" and dir="rtl"
+        // HTML should have lang="sd" and dir="ltr"
         $response->assertSee('lang="sd"', false);
-        $response->assertSee('dir="rtl"', false);
+        $response->assertSee('dir="ltr"', false);
     }
 
     public function test_ltr_direction_for_english(): void

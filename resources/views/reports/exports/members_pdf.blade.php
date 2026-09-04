@@ -33,7 +33,7 @@
                 <tr>
                     <td>{{ $member->name }}</td>
                     <td>{{ $member->phone }}<br>{{ $member->email }}</td>
-                    <td>{{ $member->joining_date->format('M d, Y') }}</td>
+                    <td>{{ $member->joining_date->gymDateFormat() }}</td>
                     <td>{{ $member->trainer ? $member->trainer->name : '-' }}</td>
                     <td>{{ ucwords(str_replace('_', ' ', $member->status)) }}</td>
                 </tr>

@@ -66,6 +66,6 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')
-            ->with('status', 'You have been securely logged out.');
+            ->with('status', __('You have been securely logged out.'));
     }
 }

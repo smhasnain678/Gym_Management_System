@@ -37,7 +37,7 @@ class ExpenseExport implements FromCollection, WithHeadings, WithMapping
     public function map($expense): array
     {
         return [
-            $expense->expense_date->format('Y-m-d'),
+            $expense->expense_date->gymDateFormat(),
             $expense->title,
             $expense->expenseCategory->name ?? '-',
             $expense->amount,

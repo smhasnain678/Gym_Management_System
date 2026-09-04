@@ -11,12 +11,12 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
-        Back to Login
+        {{ __('Back to Login') }}
     </a>
 
-    <h2 class="text-2xl font-bold mb-1" style="color: #111827;">Forgot Password?</h2>
+    <h2 class="text-2xl font-bold mb-1" style="color: #111827;">{{ __('Forgot Password?') }}</h2>
     <p class="text-sm mb-6" style="color: #6B7280;">
-        Enter your registered email and we'll generate a secure reset link for you.
+        {{ __('Enter your registered email and we\'ll generate a secure reset link for you.') }}
     </p>
 
     @if ($errors->any())
@@ -40,7 +40,7 @@
 
         <div class="mb-5">
             <label for="email" class="block text-sm font-medium mb-1.5" style="color: #374151;">
-                Registered Email
+                {{ __('Registered Email') }}
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -54,7 +54,7 @@
                        value="{{ old('email') }}"
                        required
                        autocomplete="email"
-                       placeholder="owner@mygym.com"
+                       placeholder="{{ __('owner@mygym.com') }}"
                        class="w-full pl-10 pr-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent
                               {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50 hover:border-gray-300' }}"
                        style="--tw-ring-color: #22C55E;">
@@ -68,7 +68,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
             </svg>
-            Generate Reset Link
+            {{ __('Generate Reset Link') }}
         </button>
     </form>
 </div>

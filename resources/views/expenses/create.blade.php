@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Add Expense')
-@section('meta_description', 'Record a new expense.')
-@section('page_title', 'Add Expense')
+@section('title', __('Add Expense'))
+@section('meta_description', __('Record a new expense.'))
+@section('page_title', __('Add Expense'))
 
 @section('content')
 
@@ -11,7 +11,7 @@
        class="inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:opacity-70"
        style="color:#22C55E;">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>
-        Back to Expenses
+        {{ __('Back to Expenses') }}
     </a>
 </div>
 
@@ -23,19 +23,19 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Expense Title <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Expense Title') }} <span class="text-red-500">*</span></label>
                     <input type="text" name="title" value="{{ old('title') }}" required
                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm"
-                           style="--tw-ring-color: #22C55E;" placeholder="e.g. November Rent">
+                           style="--tw-ring-color: #22C55E;" placeholder="{{ __('e.g. November Rent') }}">
                     @error('title')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Category <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Category') }} <span class="text-red-500">*</span></label>
                     <select name="expense_category_id" required
                             class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm"
                             style="--tw-ring-color: #22C55E;">
-                        <option value="">Select Category</option>
+                        <option value="">{{ __('Select Category') }}</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ old('expense_category_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
@@ -46,7 +46,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Amount <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Amount') }} <span class="text-red-500">*</span></label>
                     <input type="number" name="amount" value="{{ old('amount') }}" step="0.01" min="0.01" required
                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm"
                            style="--tw-ring-color: #22C55E;" placeholder="0.00">
@@ -54,7 +54,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Date <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Date') }} <span class="text-red-500">*</span></label>
                     <input type="date" name="expense_date" value="{{ old('expense_date', now()->format('Y-m-d')) }}" required
                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm"
                            style="--tw-ring-color: #22C55E;">
@@ -62,23 +62,23 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Paid To / Recipient</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Paid To / Recipient') }}</label>
                     <input type="text" name="paid_to" value="{{ old('paid_to') }}"
                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm"
-                           style="--tw-ring-color: #22C55E;" placeholder="e.g. Landlord Name, Utility Company">
+                           style="--tw-ring-color: #22C55E;" placeholder="{{ __('e.g. Landlord Name, Utility Company') }}">
                     @error('paid_to')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Notes / Description</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Notes / Description') }}</label>
                     <textarea name="notes" rows="3"
                               class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm resize-none"
-                              style="--tw-ring-color: #22C55E;" placeholder="Optional notes...">{{ old('notes') }}</textarea>
+                              style="--tw-ring-color: #22C55E;" placeholder="{{ __('Optional notes...') }}">{{ old('notes') }}</textarea>
                     @error('notes')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Receipt Image</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Receipt Image') }}</label>
                     <input type="file" name="receipt_image" accept="image/*"
                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-transparent text-sm"
                            style="--tw-ring-color: #22C55E;">
@@ -89,12 +89,12 @@
             <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
                 <a href="{{ route('expenses.index') }}"
                    class="px-5 py-2.5 text-sm font-semibold rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
                 <button type="submit"
                         class="px-5 py-2.5 text-sm font-semibold text-white rounded-xl shadow-sm hover:opacity-90 transition-opacity"
                         style="background-color:#22C55E;">
-                    Save Expense
+                    {{ __('Save Expense') }}
                 </button>
             </div>
 

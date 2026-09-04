@@ -66,6 +66,6 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')
-            ->with('status', 'Your password has been changed. Please log in with your new password.');
+            ->with('status', __('Your password has been changed. Please log in with your new password.'));
     }
 }

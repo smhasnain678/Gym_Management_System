@@ -126,7 +126,7 @@ class FeeController extends Controller
 
         // Security: ensure membership belongs to a real (non-deleted) member
         if (! $membership->member) {
-            return back()->with('error', 'Invalid membership — member not found.');
+            return back()->with('error', __('Invalid membership - member not found.'));
         }
 
         // Overpayment guard
@@ -166,7 +166,7 @@ class FeeController extends Controller
             ]);
         });
 
-        return back()->with('success', 'Payment of ' . number_format($validated['amount_paid'], 2) . ' recorded successfully for ' . $membership->member->name . '.');
+        return back()->with('success', __('Payment of :amount recorded successfully for :name.', ['amount' => number_format($validated['amount_paid'], 2), 'name' => $membership->member->name]));
     }
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-/* WarmUp - Global custom styles on top of Tailwind v4 */
+/* WarmUp — Global custom styles on top of Tailwind v4 */
 
 @import 'tailwindcss';
 
@@ -49,16 +49,16 @@
     background-color: #475569;
 }
 
-/* Report filter input styles — plain CSS (Tailwind v4 does not support @layer components with @apply for custom classes) */
+/* Report filter input styles */
 .report-filter-input {
     width: 100%;
-    border: 1px solid #d1d5db; /* gray-300 */
-    border-radius: 0.75rem;    /* rounded-xl */
-    padding: 0.625rem 1rem;    /* py-2.5 px-4 */
-    font-size: 0.875rem;       /* text-sm */
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
     line-height: 1.25rem;
-    background-color: #ffffff; /* bg-white */
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); /* shadow-sm */
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     outline: none;
     -webkit-appearance: none;
@@ -66,7 +66,521 @@
 }
 
 .report-filter-input:focus {
-    border-color: #22c55e;                     /* focus:border-green-500 */
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.25); /* focus:ring-2 focus:ring-green-500 */
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
     outline: none;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   WARMUP DARK THEME — Professional Navy/Charcoal Palette
+   Applied via [data-theme="dark"] on <html> element.
+   The filter: invert() approach has been REMOVED entirely.
+   Light mode is completely unaffected by anything below this line.
+   ═══════════════════════════════════════════════════════════════════
+
+   Dark Palette:
+   ─────────────────────────────────────
+   Main bg:           #111827  (deep charcoal)
+   Sidebar:           #0F172A  (deep navy — already set on element)
+   Header:            #111827  (matches main bg)
+   Cards / panels:    #1F2937  (lighter than bg — visible hierarchy)
+   Elevated/hover:    #273449  (raised surface for hover/actions)
+   Table header bg:   #1A2332  (between card and sidebar)
+   Borders:           #374151  (subtle but clearly visible)
+   Primary text:      #F9FAFB  (near-white)
+   Secondary text:    #CBD5E1  (slate-300)
+   Muted text:        #94A3B8  (slate-400)
+   Input bg:          #111827  (darker inside cards)
+   Input border:      #374151
+   ─────────────────────────────────────
+   WarmUp Green (#22C55E) is PRESERVED.
+   All semantic colors (red, orange, blue, purple) are PRESERVED.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Body & base ───────────────────────────────────────────────── */
+html[data-theme="dark"] body {
+    background-color: #111827 !important;
+    color: #F9FAFB;
+}
+
+/* ── 2. Header ────────────────────────────────────────────────────── */
+html[data-theme="dark"] header.site-header {
+    background-color: #111827 !important;
+    border-bottom-color: #374151 !important;
+    color: #F9FAFB;
+}
+
+html[data-theme="dark"] header.site-header h1 {
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] header.site-header button#sidebar-toggle {
+    color: #9CA3AF;
+}
+
+html[data-theme="dark"] header.site-header button#sidebar-toggle:hover {
+    background-color: #273449;
+    color: #F9FAFB;
+}
+
+/* Header search input */
+html[data-theme="dark"] #global-search {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] #global-search::placeholder {
+    color: #6B7280 !important;
+}
+
+html[data-theme="dark"] #global-search:focus {
+    border-color: #22C55E !important;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.20) !important;
+}
+
+/* Search results dropdown */
+html[data-theme="dark"] #search-results {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] #search-results a {
+    color: #E5E7EB !important;
+}
+
+html[data-theme="dark"] #search-results a:hover {
+    background-color: rgba(34,197,94,0.10) !important;
+    color: #4ADE80 !important;
+}
+
+/* Search category headers (Members / Trainers / Plans labels) */
+html[data-theme="dark"] #search-results div {
+    background-color: #273449 !important;
+    color: #9CA3AF !important;
+}
+
+/* Header notification bell icon */
+html[data-theme="dark"] header.site-header a[href*="notifications"] {
+    color: #9CA3AF;
+}
+
+html[data-theme="dark"] header.site-header a[href*="notifications"]:hover {
+    background-color: #273449 !important;
+}
+
+/* Notification badge border matches dark header */
+html[data-theme="dark"] #notification-badge {
+    border-color: #111827 !important;
+}
+
+/* ── 3. Sidebar ───────────────────────────────────────────────────── */
+/* Sidebar bg is already #0F172A — no filter needed */
+html[data-theme="dark"] #sidebar {
+    background-color: #0F172A;
+    /* NO filter property — completely removed */
+}
+
+/* Active nav: subtle green tint with left accent bar */
+html[data-theme="dark"] #sidebar a.sidebar-link-active {
+    background-color: rgba(34,197,94,0.12) !important;
+    color: #4ADE80 !important;
+    border-left: 2px solid #22C55E;
+    padding-left: calc(0.75rem - 2px) !important;
+}
+
+html[data-theme="dark"] #sidebar a.sidebar-link-active i {
+    color: #4ADE80 !important;
+}
+
+/* ── 4. Main content ──────────────────────────────────────────────── */
+html[data-theme="dark"] main {
+    background-color: #111827;
+}
+
+/* ── 5. Cards — bg-white becomes dark card surface ────────────────── */
+html[data-theme="dark"] .bg-white {
+    background-color: #1F2937 !important;
+    color: #F9FAFB;
+}
+
+/* ── 6. Secondary surface (bg-gray-50) ─────────────────────────────
+   Used for: filter bars, table header row background, pagination footer,
+   view-switcher background, input backgrounds, code preview swatch.
+   Mapped to a visually distinct but not-identical shade from card. */
+html[data-theme="dark"] .bg-gray-50 {
+    background-color: #1A2332 !important;
+}
+
+/* ── 7. Tertiary surface (bg-gray-100) ────────────────────────────── */
+html[data-theme="dark"] .bg-gray-100 {
+    background-color: #273449 !important;
+}
+
+/* ── 8. Hover states ──────────────────────────────────────────────── */
+html[data-theme="dark"] .hover\:bg-gray-50:hover {
+    background-color: #273449 !important;
+}
+
+html[data-theme="dark"] .hover\:bg-gray-100:hover {
+    background-color: #2D3B50 !important;
+}
+
+html[data-theme="dark"] .hover\:bg-gray-200:hover {
+    background-color: #334155 !important;
+}
+
+/* Table row hover */
+html[data-theme="dark"] .hover\:bg-gray-50:hover,
+html[data-theme="dark"] .hover\:bg-gray-50\/50:hover {
+    background-color: rgba(39,52,73,0.70) !important;
+}
+
+/* Notification unread highlight */
+html[data-theme="dark"] .bg-green-50\/30 {
+    background-color: rgba(34,197,94,0.07) !important;
+}
+
+/* ── 9. Borders ───────────────────────────────────────────────────── */
+html[data-theme="dark"] .border-gray-100 {
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] .border-gray-200 {
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] .border-gray-300 {
+    border-color: #4B5563 !important;
+}
+
+/* Dividers inside card lists */
+html[data-theme="dark"] .divide-gray-100 > * + * {
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] .divide-y > * + * {
+    border-color: #374151 !important;
+}
+
+/* ── 10. Text colors ──────────────────────────────────────────────── */
+html[data-theme="dark"] .text-gray-900 {
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] .text-gray-800 {
+    color: #F3F4F6 !important;
+}
+
+html[data-theme="dark"] .text-gray-700 {
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .text-gray-600 {
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .text-gray-500 {
+    color: #94A3B8 !important;
+}
+
+html[data-theme="dark"] .text-gray-400 {
+    color: #6B7280 !important;
+}
+
+html[data-theme="dark"] .text-gray-300 {
+    color: #64748B !important;
+}
+
+/* ── 11. Inputs, selects, textareas ───────────────────────────────── */
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+    background-color: #111827 !important;
+    color: #F9FAFB !important;
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+    color: #6B7280 !important;
+}
+
+html[data-theme="dark"] input:focus:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] textarea:focus {
+    border-color: #22C55E !important;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.20) !important;
+    outline: none !important;
+}
+
+/* Error-bordered inputs */
+html[data-theme="dark"] input.border-red-400 {
+    border-color: #F87171 !important;
+}
+
+/* Error background on inputs */
+html[data-theme="dark"] input.bg-red-50,
+html[data-theme="dark"] textarea.bg-red-50 {
+    background-color: rgba(127,29,29,0.25) !important;
+}
+
+/* Report filter inputs */
+html[data-theme="dark"] .report-filter-input {
+    background-color: #111827;
+    border-color: #374151;
+    color: #F9FAFB;
+}
+
+html[data-theme="dark"] .report-filter-input:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.20);
+}
+
+/* Native date / month / time / number inputs */
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] input[type="month"],
+html[data-theme="dark"] input[type="time"],
+html[data-theme="dark"] input[type="number"] {
+    color-scheme: dark;
+}
+
+/* Color picker — minimal override so it stays functional */
+html[data-theme="dark"] input[type="color"] {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+}
+
+/* File input — keep default browser look, just adjust text */
+html[data-theme="dark"] input[type="file"] {
+    color: #CBD5E1;
+}
+
+/* ── 12. Tables ───────────────────────────────────────────────────── */
+html[data-theme="dark"] table {
+    color: #E5E7EB;
+}
+
+/* Table header rows */
+html[data-theme="dark"] thead tr,
+html[data-theme="dark"] thead {
+    background-color: #1A2332 !important;
+    border-bottom-color: #374151 !important;
+}
+
+/* Explicitly handle the pattern: <tr style="background-color:#F9FAFB"> */
+html[data-theme="dark"] tr[style*="#F9FAFB"] {
+    background-color: #1A2332 !important;
+}
+
+/* Table body rows */
+html[data-theme="dark"] tbody tr {
+    border-color: #374151;
+}
+
+/* ── 13. Modals ───────────────────────────────────────────────────── */
+/* Modal overlay stays dark/translucent — bg-gray-900/50 is fine */
+
+/* Delete modal panel */
+html[data-theme="dark"] #delete-modal .bg-white {
+    background-color: #1F2937 !important;
+}
+
+/* Generic modals */
+html[data-theme="dark"] [id$="-modal"] .bg-white,
+html[data-theme="dark"] [id*="-modal"] .bg-white {
+    background-color: #1F2937 !important;
+}
+
+/* Cancel button in modals */
+html[data-theme="dark"] button.bg-white.border-2.border-gray-300 {
+    background-color: #273449 !important;
+    border-color: #4B5563 !important;
+    color: #E5E7EB !important;
+}
+
+html[data-theme="dark"] button.bg-white.border-2.border-gray-300:hover {
+    background-color: #334155 !important;
+}
+
+/* ── 14. Secondary utility buttons / link-buttons ─────────────────── */
+/* bg-gray-50 / bg-white border links used as secondary action buttons */
+html[data-theme="dark"] a.bg-gray-50.border {
+    background-color: #273449 !important;
+    border-color: #374151 !important;
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] a.bg-gray-50:hover {
+    background-color: #334155 !important;
+}
+
+html[data-theme="dark"] a.bg-white.border {
+    background-color: #273449 !important;
+    border-color: #374151 !important;
+    color: #CBD5E1 !important;
+}
+
+/* ── 15. Gray pill badges (bg-gray-100 text-gray-700 inline) ─────── */
+html[data-theme="dark"] span.bg-gray-100 {
+    background-color: #273449 !important;
+    color: #CBD5E1 !important;
+}
+
+/* ── 16. Flash messages ───────────────────────────────────────────── */
+/* Success: adjust to dark-tinted green */
+html[data-theme="dark"] .flash-message {
+    background-color: rgba(22,163,74,0.18) !important;
+    color: #4ADE80 !important;
+}
+
+/* ── 17. Validation error boxes ──────────────────────────────────── */
+html[data-theme="dark"] .bg-red-50:not(input):not(textarea) {
+    background-color: rgba(127,29,29,0.20) !important;
+}
+
+html[data-theme="dark"] .border-red-100 {
+    border-color: rgba(248,113,113,0.20) !important;
+}
+
+/* ── 18. Pagination ───────────────────────────────────────────────── */
+html[data-theme="dark"] [role="navigation"] span,
+html[data-theme="dark"] [role="navigation"] a {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] [role="navigation"] a:hover {
+    background-color: #273449 !important;
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] [role="navigation"] span[aria-current="page"],
+html[data-theme="dark"] [role="navigation"] span[aria-disabled="false"] {
+    background-color: #22C55E !important;
+    border-color: #22C55E !important;
+    color: #fff !important;
+}
+
+/* ── 19. Dashboard welcome banner ─────────────────────────────────── */
+/* The welcome banner uses inline style with gradient — override via class approach */
+html[data-theme="dark"] .dashboard-welcome-banner {
+    background: linear-gradient(135deg, #1F2937 0%, #273449 100%) !important;
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] .dashboard-welcome-banner h1 {
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] .dashboard-welcome-banner p {
+    color: #94A3B8 !important;
+}
+
+html[data-theme="dark"] .dashboard-welcome-banner p span {
+    color: #CBD5E1 !important;
+}
+
+/* ── 20. Dashboard expiring-soon card ─────────────────────────────── */
+html[data-theme="dark"] .border-orange-100.bg-orange-50\/50 {
+    background-color: rgba(194,65,12,0.10) !important;
+    border-color: rgba(251,146,60,0.25) !important;
+}
+
+/* ── 21. Quick action tiles ───────────────────────────────────────── */
+html[data-theme="dark"] a.border-gray-100.bg-gray-50.hover\:bg-green-50 {
+    background-color: #273449 !important;
+    border-color: #374151 !important;
+}
+
+html[data-theme="dark"] a.border-gray-100.bg-gray-50:hover {
+    background-color: rgba(34,197,94,0.10) !important;
+    border-color: rgba(34,197,94,0.25) !important;
+}
+
+/* ── 22. Attendance view-switcher background ─────────────────────── */
+html[data-theme="dark"] div.bg-white.p-1.rounded-xl {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+}
+
+/* Active view switcher tab */
+html[data-theme="dark"] .bg-gray-100.text-gray-900 {
+    background-color: #273449 !important;
+    color: #F9FAFB !important;
+}
+
+/* ── 23. Shadows — deeper in dark mode ────────────────────────────── */
+html[data-theme="dark"] .shadow-sm {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.40), 0 1px 2px -1px rgba(0,0,0,0.40) !important;
+}
+
+html[data-theme="dark"] .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.50), 0 8px 10px -6px rgba(0,0,0,0.50) !important;
+}
+
+/* ── 24. Inline style overrides for hardcoded light colors ───────── */
+html[data-theme="dark"] [style*="color: #111827"],
+html[data-theme="dark"] [style*="color:#111827"],
+html[data-theme="dark"] [style*="color: #0F172A"],
+html[data-theme="dark"] [style*="color:#0F172A"] {
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] [style*="color: #374151"],
+html[data-theme="dark"] [style*="color:#374151"] {
+    color: #E5E7EB !important;
+}
+
+html[data-theme="dark"] [style*="color: #475569"],
+html[data-theme="dark"] [style*="color:#475569"],
+html[data-theme="dark"] [style*="color: #64748B"],
+html[data-theme="dark"] [style*="color:#64748B"],
+html[data-theme="dark"] [style*="color: #6B7280"],
+html[data-theme="dark"] [style*="color:#6B7280"] {
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] [style*="color: #9CA3AF"],
+html[data-theme="dark"] [style*="color:#9CA3AF"] {
+    color: #94A3B8 !important;
+}
+
+html[data-theme="dark"] [style*="background-color: #F9FAFB"],
+html[data-theme="dark"] [style*="background-color:#F9FAFB"] {
+    background-color: #1A2332 !important;
+}
+
+/* ── 25. ApexCharts dark mode ─────────────────────────────────────── */
+html[data-theme="dark"] .apexcharts-canvas {
+    background: transparent !important;
+}
+
+html[data-theme="dark"] .apexcharts-text tspan,
+html[data-theme="dark"] .apexcharts-legend-text,
+html[data-theme="dark"] .apexcharts-title-text,
+html[data-theme="dark"] .apexcharts-datalabels-group text {
+    fill: #CBD5E1 !important;
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .apexcharts-tooltip {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+    color: #F9FAFB !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.40) !important;
+}
+
+html[data-theme="dark"] .apexcharts-tooltip-title {
+    background-color: #273449 !important;
+    border-bottom-color: #374151 !important;
+    color: #F9FAFB !important;
+}
+
+html[data-theme="dark"] .apexcharts-pie-label {
+    fill: #CBD5E1 !important;
+}
+
+/* ── 25. Images — NO filter inversion, they remain as-is ──────────── */
+/* Unlike the old filter hack, images are naturally correct in this approach */

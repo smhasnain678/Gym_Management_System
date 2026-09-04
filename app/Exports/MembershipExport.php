@@ -39,8 +39,8 @@ class MembershipExport implements FromCollection, WithHeadings, WithMapping
         return [
             $membership->member->name,
             $membership->membershipPlan->name,
-            $membership->start_date->format('Y-m-d'),
-            $membership->end_date->format('Y-m-d'),
+            $membership->start_date->gymDateFormat(),
+            $membership->end_date->gymDateFormat(),
             $membership->status,
             $membership->total_amount,
             $membership->paid_amount,

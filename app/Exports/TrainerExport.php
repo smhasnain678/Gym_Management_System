@@ -39,7 +39,7 @@ class TrainerExport implements FromCollection, WithHeadings, WithMapping
             $trainer->name,
             $trainer->phone,
             $trainer->specialization,
-            $trainer->joining_date->format('Y-m-d'),
+            $trainer->joining_date->gymDateFormat(),
             $trainer->salary,
             $trainer->is_active ? 'Active' : 'Inactive',
             $trainer->members_count ?? 0,

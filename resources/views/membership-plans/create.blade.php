@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Add Membership Plan')
-@section('meta_description', 'Create a new membership plan template.')
-@section('page_title', 'Add Membership Plan')
+@section('title', __('Add Membership Plan'))
+@section('meta_description', __('Create a new membership plan template.'))
+@section('page_title', __('Add Membership Plan'))
 
 @section('content')
 <div class="max-w-2xl mx-auto">
@@ -12,7 +12,7 @@
        class="inline-flex items-center gap-1.5 text-sm mb-6 transition-colors hover:opacity-70"
        style="color:#22C55E;">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>
-        Back to Plans
+        {{ __('Back to Plans') }}
     </a>
 
     {{-- Card --}}
@@ -26,8 +26,8 @@
                 <i data-lucide="layers" class="w-5 h-5 text-white"></i>
             </div>
             <div>
-                <h2 class="text-lg font-semibold" style="color:#111827;">New Membership Plan</h2>
-                <p class="text-xs" style="color:#6B7280;">Fill in the details below to create a reusable plan template.</p>
+                <h2 class="text-lg font-semibold" style="color:#111827;">{{ __('New Membership Plan') }}</h2>
+                <p class="text-xs" style="color:#6B7280;">{{ __('Fill in the details below to create a reusable plan template.') }}</p>
             </div>
         </div>
 
@@ -55,13 +55,13 @@
             {{-- Plan Name --}}
             <div>
                 <label for="name" class="block text-sm font-medium mb-1.5" style="color:#374151;">
-                    Plan Name <span style="color:#DC2626;">*</span>
+                    {{ __('Plan Name') }} <span style="color:#DC2626;">*</span>
                 </label>
                 <input type="text"
                        id="name"
                        name="name"
                        value="{{ old('name') }}"
-                       placeholder="e.g. Monthly, Quarterly, Annual"
+                       placeholder="{{ __('e.g. Monthly, Quarterly, Annual') }}"
                        required
                        maxlength="100"
                        class="w-full px-4 py-2.5 text-sm bg-gray-50 border rounded-xl
@@ -77,7 +77,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="duration_days" class="block text-sm font-medium mb-1.5" style="color:#374151;">
-                        Duration (days) <span style="color:#DC2626;">*</span>
+                        {{ __('Duration (days)') }} <span style="color:#DC2626;">*</span>
                     </label>
                     <input type="number"
                            id="duration_days"
@@ -91,7 +91,7 @@
                                   focus:outline-none focus:ring-2 focus:border-transparent
                                   @error('duration_days') border-red-400 @else border-gray-200 @enderror"
                            style="--tw-ring-color:#22C55E;">
-                    <p class="text-xs mt-1" style="color:#9CA3AF;">30 = 1 month · 90 = 3 months · 365 = 1 year</p>
+                    <p class="text-xs mt-1" style="color:#9CA3AF;">{{ __('30 = 1 month · 90 = 3 months · 365 = 1 year') }}</p>
                     @error('duration_days')
                         <p class="text-xs mt-1" style="color:#DC2626;">{{ $message }}</p>
                     @enderror
@@ -99,7 +99,7 @@
 
                 <div>
                     <label for="price" class="block text-sm font-medium mb-1.5" style="color:#374151;">
-                        Price <span style="color:#DC2626;">*</span>
+                        {{ __('Price') }} <span style="color:#DC2626;">*</span>
                     </label>
                     <input type="number"
                            id="price"
@@ -122,13 +122,13 @@
             {{-- Description --}}
             <div>
                 <label for="description" class="block text-sm font-medium mb-1.5" style="color:#374151;">
-                    Description <span class="font-normal" style="color:#9CA3AF;">(optional)</span>
+                    {{ __('Description') }} <span class="font-normal" style="color:#9CA3AF;">({{ __('optional') }})</span>
                 </label>
                 <textarea id="description"
                           name="description"
                           rows="3"
                           maxlength="1000"
-                          placeholder="Brief description of what this plan includes…"
+                          placeholder="{{ __('Brief description of what this plan includes…') }}"
                           class="w-full px-4 py-2.5 text-sm bg-gray-50 border rounded-xl resize-none
                                  focus:outline-none focus:ring-2 focus:border-transparent
                                  @error('description') border-red-400 @else border-gray-200 @enderror"
@@ -142,7 +142,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="color" class="block text-sm font-medium mb-1.5" style="color:#374151;">
-                        Badge Color <span class="font-normal" style="color:#9CA3AF;">(optional)</span>
+                        {{ __('Badge Color') }} <span class="font-normal" style="color:#9CA3AF;">({{ __('optional') }})</span>
                     </label>
                     <div class="flex items-center gap-3">
                         <input type="color"
@@ -174,7 +174,7 @@
 
                 <div>
                     <label for="sort_order" class="block text-sm font-medium mb-1.5" style="color:#374151;">
-                        Sort Order <span class="font-normal" style="color:#9CA3AF;">(optional)</span>
+                        {{ __('Sort Order') }} <span class="font-normal" style="color:#9CA3AF;">({{ __('optional') }})</span>
                     </label>
                     <input type="number"
                            id="sort_order"
@@ -186,7 +186,7 @@
                                   focus:outline-none focus:ring-2 focus:border-transparent
                                   @error('sort_order') border-red-400 @else border-gray-200 @enderror"
                            style="--tw-ring-color:#22C55E;">
-                    <p class="text-xs mt-1" style="color:#9CA3AF;">Lower number = shown first.</p>
+                    <p class="text-xs mt-1" style="color:#9CA3AF;">{{ __('Lower number = shown first.') }}</p>
                     @error('sort_order')
                         <p class="text-xs mt-1" style="color:#DC2626;">{{ $message }}</p>
                     @enderror
@@ -196,8 +196,8 @@
             {{-- Active toggle --}}
             <div class="flex items-center justify-between p-4 rounded-xl" style="background-color:#F9FAFB;">
                 <div>
-                    <p class="text-sm font-medium" style="color:#374151;">Active Status</p>
-                    <p class="text-xs" style="color:#9CA3AF;">Inactive plans are hidden from member assignment.</p>
+                    <p class="text-sm font-medium" style="color:#374151;">{{ __('Active Status') }}</p>
+                    <p class="text-xs" style="color:#9CA3AF;">{{ __('Inactive plans are hidden from member assignment.') }}</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                     <input type="hidden" name="is_active" value="0">
@@ -221,7 +221,7 @@
                    class="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200
                           bg-white hover:bg-gray-50 transition-colors"
                    style="color:#374151;">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
                 <button type="submit"
                         id="btn-create-plan"
@@ -229,7 +229,7 @@
                                text-white rounded-xl transition-all hover:shadow-md active:scale-95"
                         style="background-color:#22C55E;">
                     <i data-lucide="save" class="w-4 h-4"></i>
-                    Create Plan
+                    {{ __('Create Plan') }}
                 </button>
             </div>
         </form>

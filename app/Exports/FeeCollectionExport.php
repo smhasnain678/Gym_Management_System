@@ -36,13 +36,13 @@ class FeeCollectionExport implements FromCollection, WithHeadings, WithMapping
     public function map($payment): array
     {
         return [
-            $payment->payment_date->format('Y-m-d'),
+            $payment->payment_date->gymDateFormat(),
             $payment->receipt_number ?? '-',
             $payment->member->name,
             $payment->memberMembership->membershipPlan->name ?? '-',
             $payment->amount_paid,
             $payment->payment_method,
-            $payment->due_date ? $payment->due_date->format('Y-m-d') : '-',
+            $payment->due_date ? $payment->due_date->gymDateFormat() : '-',
         ];
     }
 }

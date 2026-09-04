@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'WarmUp') — Gym Management</title>
-    <meta name="description" content="@yield('meta_description', 'WarmUp Gym Management System — manage members, attendance, fees and more.')">
+    <title>@yield('title', __('WarmUp')) — {{ __('Gym Management') }}</title>
+    <meta name="description" content="@yield('meta_description', __('WarmUp Gym Management System — manage members, attendance, fees and more.'))">
 
     <!-- Inter Font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +18,7 @@
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen flex items-center justify-center" style="background-color: #F1F1F1; font-family: 'Inter', sans-serif;">
+<body class="min-h-screen flex items-center justify-center auth-body" style="font-family: 'Inter', sans-serif;">
 
     <div class="w-full max-w-md px-4">
         {{-- Logo --}}
@@ -31,13 +31,13 @@
                               d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                 </div>
-                <span class="text-3xl font-bold" style="color: #111827;">Warm<span style="color: #22C55E;">Up</span></span>
+                <span class="text-3xl font-bold" style="color: #111827;">{{ __('Warm') }}<span style="color: #22C55E;">{{ __('Up') }}</span></span>
             </a>
-            <p class="mt-2 text-sm" style="color: #6B7280;">Gym Management Dashboard</p>
+            <p class="mt-2 text-sm" style="color: #6B7280;">{{ __('Gym Management Dashboard') }}</p>
         </div>
 
         {{-- Card --}}
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+        <div class="auth-card bg-white rounded-3xl shadow-xl overflow-hidden">
             <div class="h-1.5 w-full" style="background: linear-gradient(90deg, #22C55E, #16A34A);"></div>
             <div class="p-8">
                 @yield('content')
@@ -46,7 +46,7 @@
 
         {{-- Footer --}}
         <p class="text-center text-xs mt-6" style="color: #9CA3AF;">
-            &copy; {{ date('Y') }} WarmUp Gym Management. All rights reserved.
+            &copy; {{ date('Y') }} {{ __('WarmUp Gym Management. All rights reserved.') }}
         </p>
     </div>
 

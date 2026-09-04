@@ -34,11 +34,11 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping
     public function map($attendance): array
     {
         return [
-            $attendance->date->format('Y-m-d'),
+            $attendance->date->gymDateFormat(),
             $attendance->member->name,
             ucfirst($attendance->status),
-            $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->format('h:i A') : '-',
-            $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->format('h:i A') : '-',
+            $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->gymTimeFormat() : '-',
+            $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->gymTimeFormat() : '-',
         ];
     }
 }

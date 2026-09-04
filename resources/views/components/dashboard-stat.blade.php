@@ -13,6 +13,6 @@
     </div>
     <div>
         <p class="text-2xl font-bold text-gray-900">{{ $value }}</p>
-        <p class="text-sm text-gray-500 font-medium">{{ $label }}</p>
+        <p class="text-sm text-gray-500 font-medium">{!! $label !!}</p>
     </div>
 </div>

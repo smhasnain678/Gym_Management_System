@@ -84,7 +84,7 @@ class TrainerController extends Controller
 
         return redirect()
             ->route('trainers.show', $trainer)
-            ->with('success', 'Trainer "' . $trainer->name . '" added successfully.');
+            ->with('success', __('Trainer ":name" added successfully.', ['name' => $trainer->name]));
     }
 
     /**
@@ -139,7 +139,7 @@ class TrainerController extends Controller
 
         return redirect()
             ->route('trainers.show', $trainer)
-            ->with('success', 'Trainer "' . $trainer->name . '" updated successfully.');
+            ->with('success', __('Trainer ":name" updated successfully.', ['name' => $trainer->name]));
     }
 
     /**
@@ -156,9 +156,9 @@ class TrainerController extends Controller
             $trainer->delete();
             return redirect()
                 ->route('trainers.index')
-                ->with('success', 'Trainer "' . $name . '" has been removed.');
+                ->with('success', __('Trainer ":name" has been removed.', ['name' => $name]));
         } catch (\Illuminate\Database\QueryException $e) {
-            return back()->with('error', 'Cannot delete trainer because they are linked to existing members or records.');
+            return back()->with('error', __('Cannot delete trainer because they are linked to existing members or records.'));
         }
     }
 
@@ -170,8 +170,7 @@ class TrainerController extends Controller
         $trainer->update(['is_active' => !$trainer->is_active]);
         $status = $trainer->is_active ? 'Activated' : 'Deactivated';
 
-        return redirect()
-            ->route('trainers.show', $trainer)
-            ->with('success', 'Trainer "' . $trainer->name . '" ' . strtolower($status) . ' successfully.');
+        return back()
+            ->with('success', __('Trainer ":name" :status successfully.', ['name' => $trainer->name, 'status' => strtolower($status)]));
     }
 }

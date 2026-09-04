@@ -8,16 +8,16 @@
 <div class="space-y-6">
 
     {{-- Welcome Banner --}}
-    <div class="rounded-2xl p-6 lg:p-7 overflow-hidden relative border shadow-sm"
+    <div class="dashboard-welcome-banner rounded-2xl p-6 lg:p-7 overflow-hidden relative border shadow-sm"
          style="background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border-color: #E2E8F0;">
         <div class="relative flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold mb-1.5" style="color: #0F172A;">Welcome back, {{ auth()->user()->name }}</h1>
-                <p class="text-sm" style="color: #64748B;">Here is what's happening at your gym today, <span class="font-medium" style="color: #475569;">{{ now()->format('l, d F Y') }}</span></p>
+                <h1 class="text-2xl font-bold mb-1.5 text-slate-900">{{ __('Welcome back,') }} {{ auth()->user()->name }}</h1>
+                <p class="text-sm text-slate-500">{{ __('Here is what\'s happening at your gym today,') }} <span class="font-medium text-slate-600">{{ now()->format('l, ') . now()->gymDateFormat() }}</span></p>
             </div>
             <div class="hidden sm:block">
                 <a href="{{ route('members.create') }}" class="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-green-700 transition-colors shadow-sm active:scale-95" style="background-color: #22C55E;">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Add Member
+                    <i data-lucide="plus" class="w-4 h-4"></i> {{ __('Add Member') }}
                 </a>
             </div>
         </div>
@@ -25,19 +25,19 @@
 
     {{-- Core Stats Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-        <x-dashboard-stat label="Total Members" :value="$totalMembers" icon="users" color="#22C55E" bg="#DCFCE7" />
-        <x-dashboard-stat label="Active Members" :value="$activeMembers" icon="user-check" color="#3B82F6" bg="#DBEAFE" />
-        <x-dashboard-stat label="Today's New Members" :value="$todaysNewMembers" icon="user-plus" color="#10B981" bg="#D1FAE5" />
-        <x-dashboard-stat label="Active Trainers" :value="$activeTrainers" icon="dumbbell" color="#A855F7" bg="#F3E8FF" />
-        <x-dashboard-stat label="Today's Check-ins" :value="$todaysAttendance" icon="calendar-check" color="#F59E0B" bg="#FEF3C7" />
+        <x-dashboard-stat label="{{ __('Total Members') }}" :value="$totalMembers" icon="users" color="#22C55E" bg="#DCFCE7" />
+        <x-dashboard-stat label="{{ __('Active Members') }}" :value="$activeMembers" icon="user-check" color="#3B82F6" bg="#DBEAFE" />
+        <x-dashboard-stat label="{!! __('Today\'s New Members') !!}" :value="$todaysNewMembers" icon="user-plus" color="#10B981" bg="#D1FAE5" />
+        <x-dashboard-stat label="{{ __('Active Trainers') }}" :value="$activeTrainers" icon="dumbbell" color="#A855F7" bg="#F3E8FF" />
+        <x-dashboard-stat label="{!! __('Today\'s Check-ins') !!}" :value="$todaysAttendance" icon="calendar-check" color="#F59E0B" bg="#FEF3C7" />
     </div>
 
     {{-- Financial Stats Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <x-dashboard-stat label="Monthly Revenue" value="${{ number_format($monthlyRevenue, 2) }}" icon="trending-up" color="#10B981" bg="#D1FAE5" />
-        <x-dashboard-stat label="Monthly Expenses" value="${{ number_format($monthlyExpenses, 2) }}" icon="trending-down" color="#EF4444" bg="#FEE2E2" />
-        <x-dashboard-stat label="Net Profit" value="${{ number_format($netProfit, 2) }}" icon="dollar-sign" color="#06B6D4" bg="#CFFAFE" />
-        <x-dashboard-stat label="Pending Fees" value="${{ number_format($pendingFees, 2) }}" icon="alert-circle" color="#F97316" bg="#FFEDD5" />
+        <x-dashboard-stat label="{{ __('Monthly Revenue') }}" value="${{ number_format($monthlyRevenue, 2) }}" icon="trending-up" color="#10B981" bg="#D1FAE5" />
+        <x-dashboard-stat label="{{ __('Monthly Expenses') }}" value="${{ number_format($monthlyExpenses, 2) }}" icon="trending-down" color="#EF4444" bg="#FEE2E2" />
+        <x-dashboard-stat label="{{ __('Net Profit') }}" value="${{ number_format($netProfit, 2) }}" icon="dollar-sign" color="#06B6D4" bg="#CFFAFE" />
+        <x-dashboard-stat label="{{ __('Pending Fees') }}" value="${{ number_format($pendingFees, 2) }}" icon="alert-circle" color="#F97316" bg="#FFEDD5" />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -47,11 +47,11 @@
             {{-- Membership Statistics Chart --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="pie-chart" class="w-5 h-5 text-gray-500"></i> Membership Statistics
+                    <i data-lucide="pie-chart" class="w-5 h-5 text-gray-500"></i> {{ __('Membership Statistics') }}
                 </h3>
                 <div id="membershipChart" class="h-[300px] w-full flex items-center justify-center">
                     @if($membershipStats->sum('member_memberships_count') == 0)
-                        <p class="text-gray-400 text-sm">No active memberships found.</p>
+                        <p class="text-gray-400 text-sm">{{ __('No active memberships found.') }}</p>
                     @endif
                 </div>
             </div>
@@ -60,15 +60,15 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <i data-lucide="activity" class="w-5 h-5 text-gray-500"></i> Recent Activities
+                        <i data-lucide="activity" class="w-5 h-5 text-gray-500"></i> {{ __('Recent Activities') }}
                     </h3>
-                    <a href="{{ route('activity-logs.index') }}" class="text-sm text-green-600 hover:text-green-700 font-medium">View All</a>
+                    <a href="{{ route('activity-logs.index') }}" class="text-sm text-green-600 hover:text-green-700 font-medium">{{ __('View All') }}</a>
                 </div>
                 
                 @if($recentActivities->isEmpty())
                     <div class="text-center py-6">
                         <i data-lucide="clock" class="w-8 h-8 text-gray-300 mx-auto mb-2"></i>
-                        <p class="text-gray-500 text-sm">No recent activities.</p>
+                        <p class="text-gray-500 text-sm">{{ __('No recent activities.') }}</p>
                     </div>
                 @else
                     <div class="space-y-4">
@@ -78,7 +78,7 @@
                                     <i data-lucide="zap" class="w-4 h-4 text-gray-500"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-900"><span class="font-medium">{{ $activity->user->name ?? 'System' }}</span> {{ $activity->description }}</p>
+                                    <p class="text-sm text-gray-900"><span class="font-medium">{{ $activity->user->name ?? __('System') }}</span> {{ __($activity->description) }}</p>
                                     <p class="text-xs text-gray-500 mt-0.5">{{ $activity->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
@@ -94,24 +94,24 @@
             {{-- Quick Actions --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="zap" class="w-5 h-5 text-gray-500"></i> Quick Actions
+                    <i data-lucide="zap" class="w-5 h-5 text-gray-500"></i> {{ __('Quick Actions') }}
                 </h3>
                 <div class="grid grid-cols-2 gap-3">
                     <a href="{{ route('members.create') }}" class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-green-50 hover:border-green-100 hover:text-green-700 transition-colors group">
                         <i data-lucide="user-plus" class="w-6 h-6 text-gray-400 group-hover:text-green-600 mb-2"></i>
-                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">Add Member</span>
+                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">{{ __('Add Member') }}</span>
                     </a>
                     <a href="{{ route('fees.index') }}" class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-green-50 hover:border-green-100 hover:text-green-700 transition-colors group">
                         <i data-lucide="credit-card" class="w-6 h-6 text-gray-400 group-hover:text-green-600 mb-2"></i>
-                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">Receive Fee</span>
+                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">{{ __('Receive Fee') }}</span>
                     </a>
                     <a href="{{ route('attendances.index') }}" class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-green-50 hover:border-green-100 hover:text-green-700 transition-colors group">
                         <i data-lucide="check-square" class="w-6 h-6 text-gray-400 group-hover:text-green-600 mb-2"></i>
-                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">Attendance</span>
+                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">{{ __('Attendance') }}</span>
                     </a>
                     <a href="{{ route('expenses.create') }}" class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-green-50 hover:border-green-100 hover:text-green-700 transition-colors group">
                         <i data-lucide="receipt" class="w-6 h-6 text-gray-400 group-hover:text-green-600 mb-2"></i>
-                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">Add Expense</span>
+                        <span class="text-xs font-medium text-gray-600 group-hover:text-green-700">{{ __('Add Expense') }}</span>
                     </a>
                 </div>
             </div>
@@ -120,13 +120,13 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-500"></i> Expiring Soon
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-500"></i> {{ __('Expiring Soon') }}
                     </h3>
                 </div>
                 
                 @if($expiringMemberships->isEmpty())
                     <div class="text-center py-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <p class="text-gray-500 text-sm">No memberships expiring in the next 7 days.</p>
+                        <p class="text-gray-500 text-sm">{{ __('No memberships expiring in the next 7 days.') }}</p>
                     </div>
                 @else
                     <div class="space-y-3">
@@ -138,11 +138,11 @@
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-gray-900">{{ $mm->member->name ?? 'Unknown' }}</p>
-                                        <p class="text-xs text-orange-600">Ends {{ $mm->end_date->format('M d') }}</p>
+                                        <p class="text-xs text-orange-600">{{ __('Ends') }} {{ $mm->end_date->format('M d') }}</p>
                                     </div>
                                 </div>
                                 <a href="{{ route('members.show', $mm->member) }}" class="text-xs bg-white border border-orange-200 text-orange-700 px-2 py-1 rounded-lg hover:bg-orange-100 transition-colors">
-                                    Renew
+                                    {{ __('Renew') }}
                                 </a>
                             </div>
                         @endforeach
@@ -159,6 +159,11 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Detect current theme for chart styling
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const chartTextColor = isDark ? '#CBD5E1' : '#374151';
+        const chartBg = 'transparent';
+
         @if($membershipStats->sum('member_memberships_count') > 0)
             const membershipLabels = {!! json_encode($membershipStats->pluck('name')) !!};
             const membershipData = {!! json_encode($membershipStats->pluck('member_memberships_count')) !!};
@@ -175,6 +180,8 @@
                     type: 'donut',
                     height: 300,
                     fontFamily: 'Inter, sans-serif',
+                    background: chartBg,
+                    foreColor: chartTextColor,
                 },
                 labels: membershipLabels,
                 colors: finalColors,
@@ -186,9 +193,11 @@
                                 show: true,
                                 name: {
                                     show: true,
+                                    color: chartTextColor,
                                 },
                                 value: {
                                     show: true,
+                                    color: chartTextColor,
                                     formatter: function (val) {
                                         return val;
                                     }
@@ -197,6 +206,7 @@
                                     show: true,
                                     showAlways: true,
                                     label: 'Active',
+                                    color: chartTextColor,
                                     formatter: function (w) {
                                         return w.globals.seriesTotals.reduce((a, b) => {
                                             return a + b
@@ -213,12 +223,18 @@
                 legend: {
                     position: 'bottom',
                     offsetY: 0,
+                    labels: {
+                        colors: chartTextColor,
+                    },
                 },
                 stroke: {
                     show: true,
-                    colors: ['#fff'],
+                    colors: [isDark ? '#1F2937' : '#fff'],
                     width: 2
-                }
+                },
+                tooltip: {
+                    theme: isDark ? 'dark' : 'light',
+                },
             };
 
             const chart = new ApexCharts(document.querySelector("#membershipChart"), options);

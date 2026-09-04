@@ -1,12 +1,12 @@
 @extends('layouts.guest')
 
-@section('title', 'Reset Password')
-@section('meta_description', 'Set a new password for your WarmUp gym dashboard.')
+@section('title', __('Reset Password'))
+@section('meta_description', __('Set a new password for your WarmUp gym dashboard.'))
 
 @section('content')
 <div>
-    <h2 class="text-2xl font-bold mb-1" style="color: #111827;">Set New Password</h2>
-    <p class="text-sm mb-6" style="color: #6B7280;">Choose a strong new password for your account.</p>
+    <h2 class="text-2xl font-bold mb-1" style="color: #111827;">{{ __('Set New Password') }}</h2>
+    <p class="text-sm mb-6" style="color: #6B7280;">{{ __('Choose a strong new password for your account.') }}</p>
 
     @if ($errors->any())
         <div class="mb-4 flex items-start gap-3 p-4 rounded-2xl text-sm" style="background-color: #FEE2E2; color: #DC2626;">
@@ -27,7 +27,7 @@
         {{-- New Password --}}
         <div class="mb-4">
             <label for="password" class="block text-sm font-medium mb-1.5" style="color: #374151;">
-                New Password
+                {{ __('New Password') }}
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -40,7 +40,7 @@
                        type="password"
                        required
                        autocomplete="new-password"
-                       placeholder="Minimum 8 characters"
+                       placeholder="{{ __('Minimum 8 characters') }}"
                        class="w-full pl-10 pr-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent
                               {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50 hover:border-gray-300' }}"
                        style="--tw-ring-color: #22C55E;">
@@ -50,7 +50,7 @@
         {{-- Confirm Password --}}
         <div class="mb-6">
             <label for="password_confirmation" class="block text-sm font-medium mb-1.5" style="color: #374151;">
-                Confirm New Password
+                {{ __('Confirm New Password') }}
             </label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -63,7 +63,7 @@
                        type="password"
                        required
                        autocomplete="new-password"
-                       placeholder="Repeat new password"
+                       placeholder="{{ __('Repeat new password') }}"
                        class="w-full pl-10 pr-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent
                               border-gray-200 bg-gray-50 hover:border-gray-300"
                        style="--tw-ring-color: #22C55E;">

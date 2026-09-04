@@ -34,7 +34,7 @@
             @foreach($payments as $payment)
                 <tr>
                     <td>
-                        {{ $payment->payment_date->format('M d, Y') }}<br>
+                        {{ $payment->payment_date->gymDateFormat() }}<br>
                         @if($payment->receipt_number) <small>Rec: {{ $payment->receipt_number }}</small> @endif
                     </td>
                     <td>{{ $payment->member->name }}</td>

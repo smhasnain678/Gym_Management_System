@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'My Profile')
-@section('meta_description', 'Manage your WarmUp Gym Owner profile and account security.')
-@section('page_title', 'My Profile')
+@section('title', __('My Profile'))
+@section('meta_description', __('Manage your WarmUp Gym Owner profile and account security.'))
+@section('page_title', __('My Profile'))
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
@@ -18,8 +18,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-lg font-semibold" style="color: #111827;">Profile Information</h2>
-                    <p class="text-sm" style="color: #6B7280;">Update your name, email and contact details.</p>
+                    <h2 class="text-lg font-semibold" style="color: #111827;">{{ __('Profile Information') }}</h2>
+                    <p class="text-sm" style="color: #6B7280;">{{ __('Update your name, email and contact details.') }}</p>
                 </div>
             </div>
 
@@ -39,7 +39,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- Name --}}
                     <div>
-                        <label for="name" class="block text-sm font-medium mb-1.5" style="color: #374151;">Full Name</label>
+                        <label for="name" class="block text-sm font-medium mb-1.5" style="color: #374151;">{{ __('Full Name') }}</label>
                         <input id="name" name="name" type="text"
                                value="{{ old('name', $user->name) }}"
                                required
@@ -50,7 +50,7 @@
 
                     {{-- Phone --}}
                     <div>
-                        <label for="phone" class="block text-sm font-medium mb-1.5" style="color: #374151;">Phone Number</label>
+                        <label for="phone" class="block text-sm font-medium mb-1.5" style="color: #374151;">{{ __('Phone Number') }}</label>
                         <input id="phone" name="phone" type="tel"
                                value="{{ old('phone', $user->phone) }}"
                                placeholder="+92 300 0000000"
@@ -61,7 +61,7 @@
 
                     {{-- Email --}}
                     <div class="md:col-span-2">
-                        <label for="email" class="block text-sm font-medium mb-1.5" style="color: #374151;">Email Address</label>
+                        <label for="email" class="block text-sm font-medium mb-1.5" style="color: #374151;">{{ __('Email Address') }}</label>
                         <input id="email" name="email" type="email"
                                value="{{ old('email', $user->email) }}"
                                required
@@ -79,7 +79,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        Save Changes
+                        {{ __('Save Changes') }}
                     </button>
                 </div>
             </form>
@@ -97,8 +97,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-lg font-semibold" style="color: #111827;">Change Password</h2>
-                    <p class="text-sm" style="color: #6B7280;">Make sure your password is strong and unique.</p>
+                    <h2 class="text-lg font-semibold" style="color: #111827;">{{ __('Change Password') }}</h2>
+                    <p class="text-sm" style="color: #6B7280;">{{ __('Make sure your password is strong and unique.') }}</p>
                 </div>
             </div>
 
@@ -117,7 +117,7 @@
 
                 <div class="space-y-4">
                     <div>
-                        <label for="current_password" class="block text-sm font-medium mb-1.5" style="color: #374151;">Current Password</label>
+                        <label for="current_password" class="block text-sm font-medium mb-1.5" style="color: #374151;">{{ __('Current Password') }}</label>
                         <input id="current_password" name="current_password" type="password"
                                required
                                placeholder="••••••••"
@@ -127,20 +127,20 @@
                     </div>
 
                     <div>
-                        <label for="new_password" class="block text-sm font-medium mb-1.5" style="color: #374151;">New Password</label>
+                        <label for="new_password" class="block text-sm font-medium mb-1.5" style="color: #374151;">{{ __('New Password') }}</label>
                         <input id="new_password" name="password" type="password"
                                required
-                               placeholder="Minimum 8 characters"
+                               placeholder="{{ __('Minimum 8 characters') }}"
                                class="w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent
                                       {{ $errors->updatePassword->has('password') ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50' }}"
                                style="--tw-ring-color: #22C55E;">
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="block text-sm font-medium mb-1.5" style="color: #374151;">Confirm New Password</label>
+                        <label for="password_confirmation" class="block text-sm font-medium mb-1.5" style="color: #374151;">{{ __('Confirm New Password') }}</label>
                         <input id="password_confirmation" name="password_confirmation" type="password"
                                required
-                               placeholder="Repeat new password"
+                               placeholder="{{ __('Repeat new password') }}"
                                class="w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent border-gray-200 bg-gray-50"
                                style="--tw-ring-color: #22C55E;">
                     </div>
@@ -153,7 +153,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                         </svg>
-                        Update Password
+                        {{ __('Update Password') }}
                     </button>
                 </div>
             </form>
