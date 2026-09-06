@@ -28,19 +28,13 @@ class AppServiceProvider extends ServiceProvider
         // Fetch settings once per request to prevent N+1 queries.
         // Fallback values are used when the table does not yet exist (fresh install).
         $getSettings = function () {
-            static $settings = null;
-            static $loaded = false;
-            
-            if (!$loaded) {
+            return once(function () {
                 try {
-                    $settings = \App\Models\GymSetting::first();
+                    return \App\Models\GymSetting::first();
                 } catch (\Exception $e) {
-                    $settings = null;
+                    return null;
                 }
-                $loaded = true;
-            }
-            
-            return $settings;
+            });
         };
 
         /**

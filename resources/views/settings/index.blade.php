@@ -243,40 +243,44 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Backup & Restore --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <i data-lucide="database" class="w-5 h-5 text-gray-400"></i> {{ __('Backup & Restore') }}
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-4">{{ __('Safely backup your gym database or restore from an existing backup file.') }}</p>
-                    
-                    <div class="space-y-3">
-                        {{-- Download Backup --}}
-                        <a href="{{ route('settings.backup.download') }}"
-                           class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium transition-colors">
-                            <i data-lucide="download" class="w-4 h-4"></i> {{ __('Download Backup') }}
-                        </a>
-
-                        {{-- Restore Backup --}}
-                        <form action="{{ route('settings.backup.restore') }}" method="POST"
-                              enctype="multipart/form-data"
-                              onsubmit="return confirm('{{ __('This will overwrite existing data with the backup. Continue?') }}')">
-                            @csrf
-                            <label class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-700 rounded-xl text-sm font-medium transition-colors cursor-pointer">
-                                <i data-lucide="upload" class="w-4 h-4"></i> {{ __('Restore from Backup') }}
-                                <input type="file" name="backup_file" class="hidden" accept=".json,application/json"
-                                       onchange="this.closest('form').submit()">
-                            </label>
-                        </form>
-                    </div>
-
-                    <p class="text-xs text-gray-400 mt-3 text-center">Backup exports all members, trainers, fees &amp; expenses as JSON.</p>
-                </div>
             </div>
 
         </div>
     </form>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-start-3">
+            {{-- Backup & Restore --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="database" class="w-5 h-5 text-gray-400"></i> {{ __('Backup & Restore') }}
+                </h3>
+                <p class="text-sm text-gray-500 mb-4">{{ __('Safely backup your gym database or restore from an existing backup file.') }}</p>
+                
+                <div class="space-y-3">
+                    {{-- Download Backup --}}
+                    <a href="{{ route('settings.backup.download') }}"
+                       class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium transition-colors">
+                        <i data-lucide="download" class="w-4 h-4"></i> {{ __('Download Backup') }}
+                    </a>
+
+                    {{-- Restore Backup --}}
+                    <form action="{{ route('settings.backup.restore') }}" method="POST"
+                          enctype="multipart/form-data"
+                          onsubmit="return confirm('{{ __('This will overwrite existing data with the backup. Continue?') }}')">
+                        @csrf
+                        <label class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-700 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+                            <i data-lucide="upload" class="w-4 h-4"></i> {{ __('Restore from Backup') }}
+                            <input type="file" name="backup_file" class="hidden" accept=".json,application/json"
+                                   onchange="this.closest('form').submit()">
+                        </label>
+                    </form>
+                </div>
+
+                <p class="text-xs text-gray-400 mt-3 text-center">Backup exports all members, trainers, fees &amp; expenses as JSON.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
