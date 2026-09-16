@@ -1,19 +1,19 @@
 @extends('reports.exports.layout')
 
-@section('title', 'Fee Collection Report')
+@section('title', __('Fee Collection Report'))
 
 @section('filters')
-    @if($request->start_date) <strong>Start Date:</strong> {{ $request->start_date }}<br> @endif
-    @if($request->end_date) <strong>End Date:</strong> {{ $request->end_date }}<br> @endif
-    @if($request->payment_method) <strong>Payment Method:</strong> {{ $request->payment_method }}<br> @endif
+    @if($request->start_date) <strong>{{ __('Start Date') }}:</strong> {{ $request->start_date }}<br> @endif
+    @if($request->end_date) <strong>{{ __('End Date') }}:</strong> {{ $request->end_date }}<br> @endif
+    @if($request->payment_method) <strong>{{ __('Method') }}:</strong> {{ $request->payment_method }}<br> @endif
 @endsection
 
 @section('summary')
     <div class="summary">
         <table style="margin-bottom: 0; border: none;">
             <tr>
-                <td style="border: none;"><strong>Total Collected:</strong> ${{ number_format($totalCollected, 2) }}</td>
-                <td style="border: none;"><strong>Payments Count:</strong> {{ $paymentsCount }}</td>
+                <td style="border: none;"><strong>{{ __('Total Collected') }}:</strong> ${{ number_format($totalCollected, 2) }}</td>
+                <td style="border: none;"><strong>{{ __('Payments Count') }}:</strong> {{ $paymentsCount }}</td>
             </tr>
         </table>
     </div>
@@ -23,11 +23,11 @@
     <table>
         <thead>
             <tr>
-                <th>Payment Date</th>
-                <th>Member</th>
-                <th>Membership</th>
-                <th>Amount</th>
-                <th>Method</th>
+                <th>{{ __('Payment Date') }}</th>
+                <th>{{ __('Member') }}</th>
+                <th>{{ __('Membership') }}</th>
+                <th>{{ __('Amount') }}</th>
+                <th>{{ __('Method') }}</th>
             </tr>
         </thead>
         <tbody>

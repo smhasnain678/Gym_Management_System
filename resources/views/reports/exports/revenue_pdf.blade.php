@@ -1,19 +1,19 @@
 @extends('reports.exports.layout')
 
-@section('title', 'Revenue Report')
+@section('title', __('Revenue Report'))
 
 @section('filters')
-    @if($request->start_date) <strong>Start Date:</strong> {{ $request->start_date }}<br> @endif
-    @if($request->end_date) <strong>End Date:</strong> {{ $request->end_date }}<br> @endif
-    @if($request->month) <strong>Month:</strong> {{ $request->month }}<br> @endif
+    @if($request->start_date) <strong>{{ __('Start Date') }}:</strong> {{ $request->start_date }}<br> @endif
+    @if($request->end_date) <strong>{{ __('End Date') }}:</strong> {{ $request->end_date }}<br> @endif
+    @if($request->month) <strong>{{ __('Month') }}:</strong> {{ $request->month }}<br> @endif
 @endsection
 
 @section('summary')
     <div class="summary">
         <table style="margin-bottom: 0; border: none;">
             <tr>
-                <td style="border: none;"><strong>Total Revenue:</strong> ${{ number_format($totalRevenue, 2) }}</td>
-                <td style="border: none;"><strong>Payments Count:</strong> {{ $paymentsCount }}</td>
+                <td style="border: none;"><strong>{{ __('Total Revenue') }}:</strong> ${{ number_format($totalRevenue, 2) }}</td>
+                <td style="border: none;"><strong>{{ __('Payments Count') }}:</strong> {{ $paymentsCount }}</td>
             </tr>
         </table>
     </div>
@@ -23,11 +23,11 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Member</th>
-                <th>Membership</th>
-                <th>Amount</th>
-                <th>Method</th>
+                <th>{{ __('Date') }}</th>
+                <th>{{ __('Member') }}</th>
+                <th>{{ __('Membership') }}</th>
+                <th>{{ __('Amount') }}</th>
+                <th>{{ __('Method') }}</th>
             </tr>
         </thead>
         <tbody>

@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
-    <title>Print Attendance Report</title>
+    <title>{{ __('Print') }} - {{ __('Attendance Report') }}</title>
+    @if(app()->getLocale() === 'ur' || app()->getLocale() === 'sd')
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @endif
     <style>
         body { font-family: 'Inter', sans-serif; font-size: 14px; color: #333; line-height: 1.5; }
+        @if(app()->getLocale() === 'ur' || app()->getLocale() === 'sd')
+        body { font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif !important; letter-spacing: normal !important; }
+        @endif
         .print-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #22C55E; padding-bottom: 20px; }
         .logo { font-size: 28px; font-weight: bold; color: #111827; }
@@ -30,48 +36,48 @@
     <div class="print-container">
         
         <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-            <button onclick="window.print()" style="padding: 8px 16px; background: #22C55E; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Print Document</button>
-            <button onclick="window.close()" style="padding: 8px 16px; background: #6B7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px;">Close</button>
+            <button onclick="window.print()" style="padding: 8px 16px; background: #22C55E; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">{{ __('Print') }}</button>
+            <button onclick="window.close()" style="padding: 8px 16px; background: #6B7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px;">{{ __('Cancel') }}</button>
         </div>
 
         <div class="header">
             <div class="logo">Warm<span>Up</span></div>
-            <div class="title">Attendance Report</div>
+            <div class="title">{{ __('Attendance Report') }}</div>
         </div>
 
         <div class="meta">
             <div>
-                <strong>Date Range:</strong> 
+                <strong>{{ __('Date Range') }}:</strong> 
                 @if($request->start_date && $request->end_date)
                     {{ \Carbon\Carbon::parse($request->start_date)->gymDateFormat() }} - {{ \Carbon\Carbon::parse($request->end_date)->gymDateFormat() }}
                 @elseif($request->month)
                     {{ \Carbon\Carbon::parse($request->month)->format('F Y') }}
                 @else
-                    All Time
+                    {{ __('All Time') }}
                 @endif
                 <br>
-                @if($request->status) <strong>Status:</strong> {{ $request->status }} @endif
+                @if($request->status) <strong>{{ __('Status') }}:</strong> {{ $request->status }} @endif
             </div>
             <div>
-                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
+                <strong>{{ __('Generated on') }}:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
             </div>
         </div>
 
         <div class="summary">
             <div class="summary-item">
-                <div class="summary-label">Total Records</div>
+                <div class="summary-label">{{ __('Total Records') }}</div>
                 <div class="summary-value">{{ $totalAttendance }}</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Present</div>
+                <div class="summary-label">{{ __('Present') }}</div>
                 <div class="summary-value" style="color: #16A34A;">{{ $presentCount }}</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Absent</div>
+                <div class="summary-label">{{ __('Absent') }}</div>
                 <div class="summary-value" style="color: #DC2626;">{{ $absentCount }}</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Rate</div>
+                <div class="summary-label">{{ __('Attendance Rate') }}</div>
                 <div class="summary-value">{{ $attendanceRate }}%</div>
             </div>
         </div>
@@ -79,11 +85,11 @@
         <table>
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Member</th>
-                    <th>Status</th>
-                    <th>Check In</th>
-                    <th>Check Out</th>
+                    <th>{{ __('Date') }}</th>
+                    <th>{{ __('Member') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Check In') }}</th>
+                    <th>{{ __('Check Out') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,14 +103,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align: center; color: #6B7280;">No attendance records found for this period.</td>
+                        <td colspan="5" style="text-align: center; color: #6B7280;">{{ __('No attendance records found') }}</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
         <div class="footer">
-            Generated by WarmUp Gym Management System
+            {{ __('Generated by WarmUp Gym Management System') }}
         </div>
     </div>
 </body>

@@ -218,7 +218,7 @@
                                    class="w-20 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                                    placeholder="e.g. 4">
                             <p class="text-xs text-gray-500 mt-2 leading-relaxed">
-                                Characters for primary color. Leave empty for default.
+                                {{ __('Characters for primary color. Leave empty for default.') }}
                             </p>
                         </div>
 
@@ -277,7 +277,7 @@
                     </form>
                 </div>
 
-                <p class="text-xs text-gray-400 mt-3 text-center">Backup exports all members, trainers, fees &amp; expenses as JSON.</p>
+                <p class="text-xs text-gray-400 mt-3 text-center">{{ __('Backup exports all members, trainers, fees & expenses as JSON.') }}</p>
             </div>
         </div>
     </div>

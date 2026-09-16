@@ -20,7 +20,9 @@
 }
 
 /* Smooth transitions globally */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     transition-property: color, background-color, border-color, opacity, box-shadow, transform;
     transition-duration: 150ms;
     transition-timing-function: ease-in-out;
@@ -58,7 +60,7 @@
     font-size: 0.875rem;
     line-height: 1.25rem;
     background-color: #ffffff;
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     outline: none;
     -webkit-appearance: none;
@@ -67,7 +69,7 @@
 
 .report-filter-input:focus {
     border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
     outline: none;
 }
 
@@ -136,7 +138,7 @@ html[data-theme="dark"] #global-search::placeholder {
 
 html[data-theme="dark"] #global-search:focus {
     border-color: #22C55E !important;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.20) !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.20) !important;
 }
 
 /* Search results dropdown */
@@ -150,7 +152,7 @@ html[data-theme="dark"] #search-results a {
 }
 
 html[data-theme="dark"] #search-results a:hover {
-    background-color: rgba(34,197,94,0.10) !important;
+    background-color: rgba(34, 197, 94, 0.10) !important;
     color: #4ADE80 !important;
 }
 
@@ -183,7 +185,7 @@ html[data-theme="dark"] #sidebar {
 
 /* Active nav: subtle green tint with left accent bar */
 html[data-theme="dark"] #sidebar a.sidebar-link-active {
-    background-color: rgba(34,197,94,0.12) !important;
+    background-color: rgba(34, 197, 94, 0.12) !important;
     color: #4ADE80 !important;
     border-left: 2px solid #22C55E;
     padding-left: calc(0.75rem - 2px) !important;
@@ -233,12 +235,12 @@ html[data-theme="dark"] .hover\:bg-gray-200:hover {
 /* Table row hover */
 html[data-theme="dark"] .hover\:bg-gray-50:hover,
 html[data-theme="dark"] .hover\:bg-gray-50\/50:hover {
-    background-color: rgba(39,52,73,0.70) !important;
+    background-color: rgba(39, 52, 73, 0.70) !important;
 }
 
 /* Notification unread highlight */
 html[data-theme="dark"] .bg-green-50\/30 {
-    background-color: rgba(34,197,94,0.07) !important;
+    background-color: rgba(34, 197, 94, 0.07) !important;
 }
 
 /* ── 9. Borders ───────────────────────────────────────────────────── */
@@ -255,11 +257,11 @@ html[data-theme="dark"] .border-gray-300 {
 }
 
 /* Dividers inside card lists */
-html[data-theme="dark"] .divide-gray-100 > * + * {
+html[data-theme="dark"] .divide-gray-100>*+* {
     border-color: #374151 !important;
 }
 
-html[data-theme="dark"] .divide-y > * + * {
+html[data-theme="dark"] .divide-y>*+* {
     border-color: #374151 !important;
 }
 
@@ -310,7 +312,7 @@ html[data-theme="dark"] input:focus:not([type="checkbox"]):not([type="radio"]),
 html[data-theme="dark"] select:focus,
 html[data-theme="dark"] textarea:focus {
     border-color: #22C55E !important;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.20) !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.20) !important;
     outline: none !important;
 }
 
@@ -322,7 +324,7 @@ html[data-theme="dark"] input.border-red-400 {
 /* Error background on inputs */
 html[data-theme="dark"] input.bg-red-50,
 html[data-theme="dark"] textarea.bg-red-50 {
-    background-color: rgba(127,29,29,0.25) !important;
+    background-color: rgba(127, 29, 29, 0.25) !important;
 }
 
 /* Report filter inputs */
@@ -334,7 +336,7 @@ html[data-theme="dark"] .report-filter-input {
 
 html[data-theme="dark"] .report-filter-input:focus {
     border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.20);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.20);
 }
 
 /* Native date / month / time / number inputs */
@@ -430,17 +432,17 @@ html[data-theme="dark"] span.bg-gray-100 {
 /* ── 16. Flash messages ───────────────────────────────────────────── */
 /* Success: adjust to dark-tinted green */
 html[data-theme="dark"] .flash-message {
-    background-color: rgba(22,163,74,0.18) !important;
+    background-color: rgba(22, 163, 74, 0.18) !important;
     color: #4ADE80 !important;
 }
 
 /* ── 17. Validation error boxes ──────────────────────────────────── */
 html[data-theme="dark"] .bg-red-50:not(input):not(textarea) {
-    background-color: rgba(127,29,29,0.20) !important;
+    background-color: rgba(127, 29, 29, 0.20) !important;
 }
 
 html[data-theme="dark"] .border-red-100 {
-    border-color: rgba(248,113,113,0.20) !important;
+    border-color: rgba(248, 113, 113, 0.20) !important;
 }
 
 /* ── 18. Pagination ───────────────────────────────────────────────── */
@@ -484,8 +486,8 @@ html[data-theme="dark"] .dashboard-welcome-banner p span {
 
 /* ── 20. Dashboard expiring-soon card ─────────────────────────────── */
 html[data-theme="dark"] .border-orange-100.bg-orange-50\/50 {
-    background-color: rgba(194,65,12,0.10) !important;
-    border-color: rgba(251,146,60,0.25) !important;
+    background-color: rgba(194, 65, 12, 0.10) !important;
+    border-color: rgba(251, 146, 60, 0.25) !important;
 }
 
 /* ── 21. Quick action tiles ───────────────────────────────────────── */
@@ -495,8 +497,8 @@ html[data-theme="dark"] a.border-gray-100.bg-gray-50.hover\:bg-green-50 {
 }
 
 html[data-theme="dark"] a.border-gray-100.bg-gray-50:hover {
-    background-color: rgba(34,197,94,0.10) !important;
-    border-color: rgba(34,197,94,0.25) !important;
+    background-color: rgba(34, 197, 94, 0.10) !important;
+    border-color: rgba(34, 197, 94, 0.25) !important;
 }
 
 /* ── 22. Attendance view-switcher background ─────────────────────── */
@@ -513,11 +515,11 @@ html[data-theme="dark"] .bg-gray-100.text-gray-900 {
 
 /* ── 23. Shadows — deeper in dark mode ────────────────────────────── */
 html[data-theme="dark"] .shadow-sm {
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.40), 0 1px 2px -1px rgba(0,0,0,0.40) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.40) !important;
 }
 
 html[data-theme="dark"] .shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.50), 0 8px 10px -6px rgba(0,0,0,0.50) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.50), 0 8px 10px -6px rgba(0, 0, 0, 0.50) !important;
 }
 
 /* ── 24. Inline style overrides for hardcoded light colors ───────── */
@@ -569,7 +571,7 @@ html[data-theme="dark"] .apexcharts-tooltip {
     background-color: #1F2937 !important;
     border-color: #374151 !important;
     color: #F9FAFB !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.40) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.40) !important;
 }
 
 html[data-theme="dark"] .apexcharts-tooltip-title {
@@ -584,3 +586,54 @@ html[data-theme="dark"] .apexcharts-pie-label {
 
 /* ── 25. Images — NO filter inversion, they remain as-is ──────────── */
 /* Unlike the old filter hack, images are naturally correct in this approach */
+
+/* ── 26. RTL / Localization Fonts ─────────────────────────────────── */
+/* html[lang="ur"] body, html[lang="sd"] body {
+    font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif;
+}
+html[lang="ur"] *, html[lang="sd"] * {
+    letter-spacing: normal !important;
+} */
+
+@font-face {
+    font-family: 'Jameel Noori Nastaleeq Regular';
+    src: url('/fonts/JameelNooriNastaleeqRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+/* Urdu language */
+html[lang="ur"] body,
+html[lang="ur"] body * {
+    font-family: 'Jameel Noori Nastaleeq Regular',
+        Inter,
+        Arial,
+        sans-serif !important;
+}
+
+/* Urdu font size */
+html[lang="ur"] body {
+    font-size: 35px;
+}
+
+/* English text inside Urdu page */
+html[lang="ur"] input,
+html[lang="ur"] textarea,
+html[lang="ur"] select,
+html[lang="ur"] button {
+    font-family: Inter, Arial, sans-serif !important;
+    font-size: 14px;
+}
+
+/* Sindhi — unchanged */
+html[lang="sd"] body,
+html[lang="sd"] body * {
+    font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif;
+}
+
+/* Letter spacing */
+html[lang="ur"] *,
+html[lang="sd"] * {
+    letter-spacing: normal !important;
+}

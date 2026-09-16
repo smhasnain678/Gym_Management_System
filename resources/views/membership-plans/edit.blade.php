@@ -236,47 +236,45 @@
                 <span>{{ __('Assignments:') }} {{ $membershipPlan->memberMemberships()->count() }}</span>
             </div>
 
-            {{-- Submit --}}
-            <div class="flex items-center justify-between pt-2">
-
-                {{-- Danger zone: delete --}}
-                @if(!$membershipPlan->memberMemberships()->exists())
-                    <form action="{{ route('membership-plans.destroy', $membershipPlan) }}"
-                          method="POST"
-                          onsubmit="return confirm('Delete plan \'{{ addslashes($membershipPlan->name) }}\'?\nThis cannot be undone.');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                id="btn-delete-plan"
-                                class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium
-                                       rounded-xl border transition-colors"
-                                style="border-color:#FCA5A5; color:#DC2626; background-color:#FFF7F7;">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            {{ __('Delete Plan') }}
-                        </button>
-                    </form>
-                @else
-                    <div></div>
-                @endif
-
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('membership-plans.index') }}"
-                       class="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200
-                              bg-white hover:bg-gray-50 transition-colors"
-                       style="color:#374151;">
-                        {{ __('Cancel') }}
-                    </a>
-                    <button type="submit"
-                            id="btn-update-plan"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold
-                                   text-white rounded-xl transition-all hover:shadow-md active:scale-95"
-                            style="background-color:#22C55E;">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        {{ __('Save Changes') }}
-                    </button>
-                </div>
+            {{-- Submit row (inside edit form): Cancel + Save Changes only --}}
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <a href="{{ route('membership-plans.index') }}"
+                   class="px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200
+                          bg-white hover:bg-gray-50 transition-colors"
+                   style="color:#374151;">
+                    {{ __('Cancel') }}
+                </a>
+                <button type="submit"
+                        id="btn-update-plan"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold
+                               text-white rounded-xl transition-all hover:shadow-md active:scale-95"
+                        style="background-color:#22C55E;">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    {{ __('Save Changes') }}
+                </button>
             </div>
         </form>
+        {{-- ↑ Edit form closes here. Delete form is a sibling below, never nested. --}}
+
+        {{-- Danger zone: delete (sibling form — outside the edit form) --}}
+        @if(!$membershipPlan->memberMemberships()->exists())
+            <div class="px-6 pb-6 flex items-center justify-start">
+                <form action="{{ route('membership-plans.destroy', $membershipPlan) }}"
+                      method="POST"
+                      onsubmit="return confirm('Delete plan \'{{ addslashes($membershipPlan->name) }}\'?\nThis cannot be undone.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            id="btn-delete-plan"
+                            class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium
+                                   rounded-xl border transition-colors"
+                            style="border-color:#FCA5A5; color:#DC2626; background-color:#FFF7F7;">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        {{ __('Delete Plan') }}
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

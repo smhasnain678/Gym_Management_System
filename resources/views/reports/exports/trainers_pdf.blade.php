@@ -1,16 +1,16 @@
 @extends('reports.exports.layout')
 
-@section('title', 'Trainer Report')
+@section('title', __('Trainer Report'))
 
 @section('filters')
-    @if($request->status) <strong>Status:</strong> {{ $request->status }}<br> @endif
+    @if($request->status) <strong>{{ __('Status') }}:</strong> {{ $request->status }}<br> @endif
 @endsection
 
 @section('summary')
     <div class="summary">
         <table style="margin-bottom: 0; border: none;">
             <tr>
-                <td style="border: none;"><strong>Total Trainers:</strong> {{ $totalTrainers }}</td>
+                <td style="border: none;"><strong>{{ __('Total Trainers') }}:</strong> {{ $totalTrainers }}</td>
             </tr>
         </table>
     </div>
@@ -20,12 +20,12 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Specialization</th>
-                <th>Contact</th>
-                <th>Joining Date</th>
-                <th>Assigned Members</th>
-                <th>Status</th>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Specialization') }}</th>
+                <th>{{ __('Contact') }}</th>
+                <th>{{ __('Joining Date') }}</th>
+                <th>{{ __('Assigned Members') }}</th>
+                <th>{{ __('Status') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@
                     <td>{{ $trainer->phone }}</td>
                     <td>{{ $trainer->joining_date->gymDateFormat() }}</td>
                     <td>{{ $trainer->members_count ?? 0 }}</td>
-                    <td>{{ $trainer->is_active ? 'Active' : 'Inactive' }}</td>
+                    <td>{{ $trainer->is_active ? __('Active') : __('Inactive') }}</td>
                 </tr>
             @endforeach
         </tbody>

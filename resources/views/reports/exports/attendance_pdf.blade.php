@@ -1,21 +1,21 @@
 @extends('reports.exports.layout')
 
-@section('title', 'Attendance Report')
+@section('title', __('Attendance Report'))
 
 @section('filters')
-    @if($request->start_date) <strong>Start Date:</strong> {{ $request->start_date }}<br> @endif
-    @if($request->end_date) <strong>End Date:</strong> {{ $request->end_date }}<br> @endif
-    @if($request->status) <strong>Status:</strong> {{ $request->status }}<br> @endif
+    @if($request->start_date) <strong>{{ __('Start Date') }}:</strong> {{ $request->start_date }}<br> @endif
+    @if($request->end_date) <strong>{{ __('End Date') }}:</strong> {{ $request->end_date }}<br> @endif
+    @if($request->status) <strong>{{ __('Status') }}:</strong> {{ $request->status }}<br> @endif
 @endsection
 
 @section('summary')
     <div class="summary">
         <table style="margin-bottom: 0; border: none;">
             <tr>
-                <td style="border: none;"><strong>Total Records:</strong> {{ $totalAttendance }}</td>
-                <td style="border: none;"><strong>Present:</strong> {{ $presentCount }}</td>
-                <td style="border: none;"><strong>Absent:</strong> {{ $absentCount }}</td>
-                <td style="border: none;"><strong>Rate:</strong> {{ $attendanceRate }}%</td>
+                <td style="border: none;"><strong>{{ __('Total Records') }}:</strong> {{ $totalAttendance }}</td>
+                <td style="border: none;"><strong>{{ __('Present') }}:</strong> {{ $presentCount }}</td>
+                <td style="border: none;"><strong>{{ __('Absent') }}:</strong> {{ $absentCount }}</td>
+                <td style="border: none;"><strong>{{ __('Attendance Rate') }}:</strong> {{ $attendanceRate }}%</td>
             </tr>
         </table>
     </div>
@@ -25,11 +25,11 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Member</th>
-                <th>Status</th>
-                <th>Check In</th>
-                <th>Check Out</th>
+                <th>{{ __('Date') }}</th>
+                <th>{{ __('Member') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Check In') }}</th>
+                <th>{{ __('Check Out') }}</th>
             </tr>
         </thead>
         <tbody>

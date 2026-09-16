@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
-    <title>Print Member Details — {{ $member->name }}</title>
+    <title>{{ __('Print') }} - {{ __('Member Details') }}</title>
+    @if(app()->getLocale() === 'ur' || app()->getLocale() === 'sd')
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @endif
     <style>
         body { font-family: 'Inter', sans-serif; font-size: 14px; color: #333; line-height: 1.5; }
+        @if(app()->getLocale() === 'ur' || app()->getLocale() === 'sd')
+        body { font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif !important; letter-spacing: normal !important; }
+        @endif
         .print-container { max-width: 800px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #22C55E; padding-bottom: 20px; }
         .logo { font-size: 28px; font-weight: bold; color: #111827; }
@@ -35,54 +41,54 @@
     <div class="print-container">
 
         <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-            <button onclick="window.print()" style="padding: 8px 16px; background: #22C55E; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Print Document</button>
-            <button onclick="window.close()" style="padding: 8px 16px; background: #6B7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px;">Close</button>
+            <button onclick="window.print()" style="padding: 8px 16px; background: #22C55E; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">{{ __('Print') }}</button>
+            <button onclick="window.close()" style="padding: 8px 16px; background: #6B7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px;">{{ __('Cancel') }}</button>
         </div>
 
         <div class="header">
             <div class="logo">Warm<span>Up</span></div>
-            <div class="title">Member Details</div>
+            <div class="title">{{ __('Member Details') }}</div>
         </div>
 
         <div class="meta">
             <div>
-                <strong>Member:</strong> {{ $member->name }}
+                <strong>{{ __('Member') }}:</strong> {{ $member->name }}
             </div>
             <div>
-                <strong>Generated:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
+                <strong>{{ __('Generated on') }}:</strong> {{ \Carbon\Carbon::now('Asia/Karachi')->gymDateTimeFormat() }}
             </div>
         </div>
 
         {{-- Personal Information --}}
         <div class="section">
-            <div class="section-title">Personal Information</div>
+            <div class="section-title">{{ __('Personal Information') }}</div>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">Full Name</div>
+                    <div class="info-label">{{ __('Full Name') }}</div>
                     <div class="info-value">{{ $member->name }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Status</div>
+                    <div class="info-label">{{ __('Status') }}</div>
                     <div class="info-value">
                         <span class="status-badge {{ strtolower($member->status) === 'active' ? 'status-active' : 'status-inactive' }}">
-                            {{ ucfirst($member->status) }}
+                            {{ __(ucfirst($member->status)) }}
                         </span>
                     </div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Gender</div>
-                    <div class="info-value">{{ ucfirst($member->gender ?? '-') }}</div>
+                    <div class="info-label">{{ __('Gender') }}</div>
+                    <div class="info-value">{{ __(ucfirst($member->gender ?? '-')) }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Date of Birth</div>
+                    <div class="info-label">{{ __('Date of Birth') }}</div>
                     <div class="info-value">{{ $member->date_of_birth ? $member->date_of_birth->gymDateFormat() : '-' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Joining Date</div>
+                    <div class="info-label">{{ __('Joining Date') }}</div>
                     <div class="info-value">{{ $member->joining_date->gymDateFormat() }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Blood Group</div>
+                    <div class="info-label">{{ __('Blood Group') }}</div>
                     <div class="info-value">{{ $member->blood_group ?? '-' }}</div>
                 </div>
             </div>
@@ -90,18 +96,18 @@
 
         {{-- Contact Information --}}
         <div class="section">
-            <div class="section-title">Contact Information</div>
+            <div class="section-title">{{ __('Contact Info') }}</div>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">Phone</div>
+                    <div class="info-label">{{ __('Phone') }}</div>
                     <div class="info-value">{{ $member->phone }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Email</div>
+                    <div class="info-label">{{ __('Email') }}</div>
                     <div class="info-value">{{ $member->email ?? '-' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Address</div>
+                    <div class="info-label">{{ __('Address') }}</div>
                     <div class="info-value">{{ $member->address ?? '-' }}</div>
                 </div>
             </div>
@@ -110,14 +116,14 @@
         {{-- Emergency Contact --}}
         @if($member->emergency_contact_name || $member->emergency_contact_phone)
         <div class="section">
-            <div class="section-title">Emergency Contact</div>
+            <div class="section-title">{{ __('Emergency Contact') }}</div>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">Contact Name</div>
+                    <div class="info-label">{{ __('Emergency Contact Name') }}</div>
                     <div class="info-value">{{ $member->emergency_contact_name ?? '-' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Contact Phone</div>
+                    <div class="info-label">{{ __('Emergency Contact Phone') }}</div>
                     <div class="info-value">{{ $member->emergency_contact_phone ?? '-' }}</div>
                 </div>
             </div>
@@ -127,7 +133,7 @@
         {{-- Medical Notes --}}
         @if($member->medical_notes)
         <div class="section">
-            <div class="section-title">Medical Notes</div>
+            <div class="section-title">{{ __('Medical Notes') }}</div>
             <div class="info-value">{{ $member->medical_notes }}</div>
         </div>
         @endif
@@ -135,14 +141,14 @@
         {{-- Physical Info --}}
         @if($member->height || $member->weight)
         <div class="section">
-            <div class="section-title">Physical Information</div>
+            <div class="section-title">{{ __('Physical Information') }}</div>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">Height (cm)</div>
+                    <div class="info-label">{{ __('Height (cm)') }}</div>
                     <div class="info-value">{{ $member->height ?? '-' }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Weight (kg)</div>
+                    <div class="info-label">{{ __('Weight (kg)') }}</div>
                     <div class="info-value">{{ $member->weight ?? '-' }}</div>
                 </div>
             </div>
@@ -151,37 +157,37 @@
 
         {{-- Assigned Trainer --}}
         <div class="section">
-            <div class="section-title">Assigned Trainer</div>
+            <div class="section-title">{{ __('Assigned Trainer') }}</div>
             @if($member->trainer)
                 <div class="info-grid">
                     <div class="info-item">
-                        <div class="info-label">Trainer Name</div>
+                        <div class="info-label">{{ __('Name') }}</div>
                         <div class="info-value">{{ $member->trainer->name }}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Specialization</div>
+                        <div class="info-label">{{ __('Specialization') }}</div>
                         <div class="info-value">{{ $member->trainer->specialization ?? '-' }}</div>
                     </div>
                 </div>
             @else
-                <div class="info-value" style="color: #6B7280;">No trainer assigned.</div>
+                <div class="info-value" style="color: #6B7280;">{{ __('No members assigned') }}</div>
             @endif
         </div>
 
         {{-- Membership History --}}
         <div class="section">
-            <div class="section-title">Membership History</div>
+            <div class="section-title">{{ __('Membership History') }}</div>
             @if($member->memberships->count() > 0)
                 <table>
                     <thead>
                         <tr>
-                            <th>Plan</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Status</th>
-                            <th>Total</th>
-                            <th>Paid</th>
-                            <th>Due</th>
+                            <th>{{ __('Plan') }}</th>
+                            <th>{{ __('Start Date') }}</th>
+                            <th>{{ __('End Date') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Total') }}</th>
+                            <th>{{ __('Paid') }}</th>
+                            <th>{{ __('Due') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -199,12 +205,12 @@
                     </tbody>
                 </table>
             @else
-                <div class="info-value" style="color: #6B7280;">No memberships found.</div>
+                <div class="info-value" style="color: #6B7280;">{{ __('No memberships found.') }}</div>
             @endif
         </div>
 
         <div class="footer">
-            Generated by WarmUp Gym Management System
+            {{ __('Generated by WarmUp Gym Management System') }}
         </div>
     </div>
 </body>

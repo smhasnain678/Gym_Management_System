@@ -1,17 +1,17 @@
 @extends('reports.exports.layout')
 
-@section('title', 'Member Report')
+@section('title', __('Member Report'))
 
 @section('filters')
-    @if($request->status) <strong>Status:</strong> {{ $request->status }}<br> @endif
+    @if($request->status) <strong>{{ __('Status') }}:</strong> {{ $request->status }}<br> @endif
 @endsection
 
 @section('summary')
     <div class="summary">
         <table style="margin-bottom: 0; border: none;">
             <tr>
-                <td style="border: none;"><strong>Total Members:</strong> {{ $totalMembers }}</td>
-                <td style="border: none;"><strong>Active Members:</strong> {{ $activeMembers }}</td>
+                <td style="border: none;"><strong>{{ __('Total Members') }}:</strong> {{ $totalMembers }}</td>
+                <td style="border: none;"><strong>{{ __('Active Members') }}:</strong> {{ $activeMembers }}</td>
             </tr>
         </table>
     </div>
@@ -21,11 +21,11 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Joining Date</th>
-                <th>Trainer</th>
-                <th>Status</th>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Contact') }}</th>
+                <th>{{ __('Joining Date') }}</th>
+                <th>{{ __('Trainer') }}</th>
+                <th>{{ __('Status') }}</th>
             </tr>
         </thead>
         <tbody>

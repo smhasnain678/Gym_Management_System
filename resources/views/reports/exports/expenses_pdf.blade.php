@@ -1,18 +1,18 @@
 @extends('reports.exports.layout')
 
-@section('title', 'Expense Report')
+@section('title', __('Expense Report'))
 
 @section('filters')
-    @if($request->start_date) <strong>Start Date:</strong> {{ $request->start_date }}<br> @endif
-    @if($request->end_date) <strong>End Date:</strong> {{ $request->end_date }}<br> @endif
+    @if($request->start_date) <strong>{{ __('Start Date') }}:</strong> {{ $request->start_date }}<br> @endif
+    @if($request->end_date) <strong>{{ __('End Date') }}:</strong> {{ $request->end_date }}<br> @endif
 @endsection
 
 @section('summary')
     <div class="summary">
         <table style="margin-bottom: 0; border: none;">
             <tr>
-                <td style="border: none;"><strong>Total Expenses:</strong> ${{ number_format($totalExpenses, 2) }}</td>
-                <td style="border: none;"><strong>Expense Count:</strong> {{ $expenseCount }}</td>
+                <td style="border: none;"><strong>{{ __('Total Expenses') }}:</strong> ${{ number_format($totalExpenses, 2) }}</td>
+                <td style="border: none;"><strong>{{ __('Expense Count') }}:</strong> {{ $expenseCount }}</td>
             </tr>
         </table>
     </div>
@@ -22,11 +22,11 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Paid To</th>
+                <th>{{ __('Date') }}</th>
+                <th>{{ __('Title') }}</th>
+                <th>{{ __('Category') }}</th>
+                <th>{{ __('Amount') }}</th>
+                <th>{{ __('Paid To') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -43,12 +43,12 @@
     </table>
     
     @if(count($categoryTotals) > 0)
-    <h3 style="margin-top: 30px;">Category Breakdown</h3>
+    <h3 style="margin-top: 30px;">{{ __('Category Breakdown') }}</h3>
     <table>
         <thead>
             <tr>
-                <th>Category</th>
-                <th>Total Amount</th>
+                <th>{{ __('Category') }}</th>
+                <th>{{ __('Total Amount') }}</th>
             </tr>
         </thead>
         <tbody>
