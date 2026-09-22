@@ -18,7 +18,13 @@ if ('serviceWorker' in navigator) {
 }
 
 // Import and initialise the offline queue manager
-import { initOfflineSupport } from './offline.js';
+import { initOfflineSupport, queueMemberCreate, queueMemberUpdate } from './offline.js';
 document.addEventListener('DOMContentLoaded', () => {
     initOfflineSupport();
+
+    // Expose offline helpers for Blade templates
+    window.WarmUpOffline = {
+        queueMemberCreate,
+        queueMemberUpdate,
+    };
 });

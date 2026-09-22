@@ -613,8 +613,9 @@ html[lang="ur"] body * {
 }
 
 /* Urdu font size */
-html[lang="ur"] body {
-    font-size: 35px;
+html[lang="ur"] body,
+html[lang="ur"] body *:not(h1):not(h2):not(h3):not(.text-xl):not(.text-2xl) {
+    font-size: 21px;
 }
 
 /* English text inside Urdu page */
@@ -623,7 +624,7 @@ html[lang="ur"] textarea,
 html[lang="ur"] select,
 html[lang="ur"] button {
     font-family: Inter, Arial, sans-serif !important;
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
 /* Sindhi — unchanged */

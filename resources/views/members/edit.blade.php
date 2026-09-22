@@ -254,3 +254,104 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Offline-First: Edit Member form ──────────────────────────────────────
+    // When ONLINE  → native form submission proceeds unchanged (PUT to server).
+    // When OFFLINE → intercept, queue as `member_update` via the existing
+    //                IndexedDB action_queue (LWW via client_updated_at), then
+    //                give user feedback and redirect to the member profile.
+
+    const form = document.getElementById('edit-member-form');
+    if (!form) return;
+
+    // Server-rendered values embedded at page-load time (safe: these are
+    // the values the user loaded the page with, used for LWW timestamp).
+    const MEMBER_ID         = {{ $member->id }};
+    const MEMBER_UPDATED_AT = '{{ $member->updated_at->toISOString() }}';
+
+    form.addEventListener('submit', async function (e) {
+        // Online → let the browser POST/PUT to the server as normal.
+        if (navigator.onLine) return;
+
+        // ── We are OFFLINE ────────────────────────────────────────────────
+        e.preventDefault();
+
+        // Collect all text/select/textarea fields; skip files, _token, _method.
+        const formData = new FormData(form);
+        const payload  = {};
+        for (const [key, value] of formData.entries()) {
+            if (key === '_token' || key === '_method') continue;
+            if (value instanceof File) continue;
+            payload[key] = value;
+        }
+
+        // Detect whether user selected a new photo while offline.
+        const photoInput = document.getElementById('profile_photo');
+        const hadPhoto   = photoInput && photoInput.files && photoInput.files.length > 0;
+
+        try {
+            // Queue via the existing helper — identical pattern to queueTrainerUpdate.
+            // queueMemberUpdate(id, payload, clientUpdatedAt) → action type: member_update
+            await window.WarmUpOffline.queueMemberUpdate(MEMBER_ID, payload, MEMBER_UPDATED_AT);
+        } catch (err) {
+            console.error('[WarmUp Offline] Failed to queue member_update:', err);
+            showOfflineBanner(
+                'Could not save changes offline. Please try again.',
+                '#FEE2E2', '#DC2626'
+            );
+            return;
+        }
+
+        // Build the success message
+        let msg = 'Changes saved offline and will sync automatically when you reconnect.';
+        if (hadPhoto) {
+            msg += ' Profile photo could not be saved offline — please upload it when back online.';
+        }
+
+        showOfflineBanner(msg, '#DCFCE7', '#15803D');
+
+        // Redirect to the member's profile page after a brief pause
+        // (same destination as the online success redirect).
+        setTimeout(function () {
+            window.location.href = '{{ route('members.show', $member) }}';
+        }, 2500);
+    });
+
+    /**
+     * Inject an inline banner above the form, matching the app's flash-message style.
+     */
+    function showOfflineBanner(message, bgColor, textColor) {
+        const existing = document.getElementById('offline-queue-banner');
+        if (existing) existing.remove();
+
+        const banner = document.createElement('div');
+        banner.id = 'offline-queue-banner';
+        banner.style.cssText = [
+            'display:flex', 'align-items:center', 'gap:12px',
+            'padding:14px 16px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'margin-bottom:16px',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        banner.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"' +
+            ' fill="none" stroke="currentColor" stroke-width="2"' +
+            ' stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        // Insert before the form
+        form.parentNode.insertBefore(banner, form);
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+});
+</script>
+@endpush

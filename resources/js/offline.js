@@ -98,6 +98,14 @@ export function queueTrainerUpdate(trainerId, payload, currentUpdatedAt) {
 }
 
 /**
+ * Queue an offline member creation.
+ * @param {Object} payload 
+ */
+export function queueMemberCreate(payload) {
+    return queueAction('member_create', payload);
+}
+
+/**
  * Queue an offline member update (ensures client_updated_at is included for LWW).
  * @param {number} memberId
  * @param {Object} payload - Fields to update
