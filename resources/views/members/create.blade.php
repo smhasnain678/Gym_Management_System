@@ -15,18 +15,7 @@
         {{ __('Back to Members') }}
     </a>
 
-    {{-- Validation errors --}}
-    @if($errors->any())
-        <div class="p-4 rounded-xl text-sm flex items-start gap-2"
-             style="background-color:#FEF2F2; color:#DC2626;">
-            <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-            <ul class="list-disc pl-1 space-y-0.5">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <form action="{{ route('members.store') }}"
           method="POST"
