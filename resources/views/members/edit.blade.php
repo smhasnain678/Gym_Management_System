@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('Edit Member'))
-@section('meta_description', __('Update member profile information.'))
-@section('page_title', __('Edit Member'))
+
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
