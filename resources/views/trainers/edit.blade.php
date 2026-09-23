@@ -12,7 +12,9 @@
         </a>
     </div>
 
-    <form action="{{ route('trainers.update', $trainer) }}" method="POST" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-8">
+    <form action="{{ route('trainers.update', $trainer) }}" method="POST"
+          id="edit-trainer-form"
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-8">
         @csrf
         @method('PATCH')
 
@@ -116,3 +118,105 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Offline-First: Edit Trainer form ─────────────────────────────────────
+    // When ONLINE  → native form submission proceeds unchanged (PATCH to server).
+    // When OFFLINE → intercept, queue as `trainer_update` via the existing
+    //                IndexedDB action_queue (LWW via client_updated_at), then
+    //                give user feedback and redirect to the trainer profile.
+
+    var form = document.getElementById('edit-trainer-form');
+    if (!form) return;
+
+    // Server-rendered values embedded at page-load time (safe: these are the
+    // values the user loaded the page with, used for LWW timestamp).
+    var TRAINER_ID         = {{ $trainer->id }};
+    var TRAINER_UPDATED_AT = '{{ $trainer->updated_at->toISOString() }}';
+
+    form.addEventListener('submit', async function (e) {
+        // Online → let the browser POST/PATCH to the server as normal.
+        if (navigator.onLine) return;
+
+        // ── We are OFFLINE ────────────────────────────────────────────────
+        e.preventDefault();
+
+        // Collect all text/select/textarea fields; skip files, _token, _method.
+        var formData = new FormData(form);
+        var payload  = {};
+        for (var pair of formData.entries()) {
+            var key = pair[0], value = pair[1];
+            if (key === '_token' || key === '_method') continue;
+            if (value instanceof File) continue;
+            payload[key] = value;
+        }
+
+        // is_active checkbox: explicitly set to '0' when absent from FormData.
+        if (!('is_active' in payload)) {
+            payload['is_active'] = '0';
+        }
+
+        if (!window.WarmUpOffline || !window.WarmUpOffline.queueTrainerUpdate) {
+            console.error('[WarmUp Offline] queueTrainerUpdate not available.');
+            showOfflineBanner('Could not save changes offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        try {
+            // queueTrainerUpdate(id, payload, clientUpdatedAt) → action type: trainer_update
+            await window.WarmUpOffline.queueTrainerUpdate(TRAINER_ID, payload, TRAINER_UPDATED_AT);
+        } catch (err) {
+            console.error('[WarmUp Offline] Failed to queue trainer_update:', err);
+            showOfflineBanner('Could not save changes offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        showOfflineBanner(
+            'Changes saved offline and will sync automatically when you reconnect.',
+            '#DCFCE7', '#15803D'
+        );
+
+        // Redirect to the trainer profile page after a brief pause —
+        // same destination as the online success redirect.
+        setTimeout(function () {
+            window.location.href = '{{ route('trainers.show', $trainer) }}';
+        }, 2500);
+    });
+
+    /**
+     * Inject an inline banner above the form, matching the app's flash-message style.
+     */
+    function showOfflineBanner(message, bgColor, textColor) {
+        var existing = document.getElementById('offline-queue-banner');
+        if (existing) existing.remove();
+
+        var banner = document.createElement('div');
+        banner.id = 'offline-queue-banner';
+        banner.style.cssText = [
+            'display:flex', 'align-items:center', 'gap:12px',
+            'padding:14px 16px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'margin-bottom:16px',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        banner.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"' +
+            ' fill="none" stroke="currentColor" stroke-width="2"' +
+            ' stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        // Insert before the form
+        form.parentNode.insertBefore(banner, form);
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+});
+</script>
+@endpush

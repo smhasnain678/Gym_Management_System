@@ -30,6 +30,7 @@
     </div>
 </div>
 
+
 <script>
     function openDeleteModal(url, title, message, warning = null) {
         document.getElementById('delete-form').action = url;
@@ -49,5 +50,108 @@
 
     function closeDeleteModal() {
         document.getElementById('delete-modal').classList.add('hidden');
+    }
+
+    // ── Offline-First: Delete Member ─────────────────────────────────────────
+    // When ONLINE  → native form DELETE submission proceeds unchanged.
+    // When OFFLINE → if the target URL is a members.destroy route, extract the
+    //                member ID, queue as `member_delete`, close the modal, and
+    //                show an offline toast.  Non-member deletes are not handled
+    //                offline (no other delete action type exists in the backend).
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteForm = document.getElementById('delete-form');
+        if (!deleteForm) return;
+
+        deleteForm.addEventListener('submit', async function (e) {
+            // If online, proceed with the normal form submission.
+            if (navigator.onLine) return;
+
+            // Extract the action URL to determine if this is a member delete.
+            // members.destroy routes follow the pattern: /members/{id}
+            var action = deleteForm.action || '';
+            var match  = action.match(/\/members\/(\d+)(?:\?.*)?$/);
+
+            if (!match) {
+                // Not a member delete — we have no offline handler for other
+                // resource types, so let the form submit (will fail offline,
+                // which is the honest behaviour for unsupported types).
+                return;
+            }
+
+            // ── We are OFFLINE and this is a member delete ────────────────────
+            e.preventDefault();
+
+            var memberId = parseInt(match[1], 10);
+
+            // Close the modal immediately so the UI feels responsive.
+            closeDeleteModal();
+
+            // Guard: WarmUpOffline may not be ready if the bundle hasn't loaded.
+            if (!window.WarmUpOffline || !window.WarmUpOffline.queueMemberDelete) {
+                console.error('[WarmUp Offline] queueMemberDelete not available.');
+                showDeleteOfflineToast(
+                    'Could not queue deletion offline — please try again.',
+                    '#FEE2E2', '#DC2626'
+                );
+                return;
+            }
+
+            try {
+                await window.WarmUpOffline.queueMemberDelete(memberId);
+            } catch (err) {
+                console.error('[WarmUp Offline] Failed to queue member_delete:', err);
+                showDeleteOfflineToast(
+                    'Could not save deletion offline. Please try again.',
+                    '#FEE2E2', '#DC2626'
+                );
+                return;
+            }
+
+            showDeleteOfflineToast(
+                'Deletion queued offline. The member will be removed when you reconnect.',
+                '#DCFCE7', '#15803D'
+            );
+        });
+    });
+
+    /**
+     * Display a brief fixed toast at the top of the viewport.
+     * Auto-dismisses after 4 seconds.
+     */
+    function showDeleteOfflineToast(message, bgColor, textColor) {
+        var existing = document.getElementById('offline-delete-toast');
+        if (existing) existing.remove();
+
+        var toast = document.createElement('div');
+        toast.id = 'offline-delete-toast';
+        toast.style.cssText = [
+            'position:fixed', 'top:20px', 'left:50%',
+            'transform:translateX(-50%)',
+            'z-index:9999',
+            'display:flex', 'align-items:center', 'gap:10px',
+            'padding:14px 20px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'box-shadow:0 4px 24px rgba(0,0,0,0.12)',
+            'max-width:90vw',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        toast.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"' +
+            ' fill="none" stroke="currentColor" stroke-width="2"' +
+            ' stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        document.body.appendChild(toast);
+
+        // Auto-dismiss after 4 seconds
+        setTimeout(function () {
+            toast.style.opacity = '0';
+            setTimeout(function () { toast.remove(); }, 500);
+        }, 4000);
     }
 </script>

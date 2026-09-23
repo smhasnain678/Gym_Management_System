@@ -12,7 +12,9 @@
         </a>
     </div>
 
-    <form action="{{ route('trainers.store') }}" method="POST" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-8">
+    <form action="{{ route('trainers.store') }}" method="POST"
+          id="create-trainer-form"
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-8">
         @csrf
 
         @if($errors->any())
@@ -115,3 +117,100 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Offline-First: Add Trainer form ──────────────────────────────────────
+    // When ONLINE  → native form submission proceeds unchanged.
+    // When OFFLINE → intercept, queue as `trainer_create` via the existing
+    //                IndexedDB action_queue, then give feedback and redirect.
+
+    var form = document.getElementById('create-trainer-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function (e) {
+        // If online, let the browser submit normally — do nothing.
+        if (navigator.onLine) return;
+
+        // ── We are OFFLINE ────────────────────────────────────────────────
+        e.preventDefault();
+
+        // Collect all named form values; skip CSRF token and file inputs.
+        var data = new FormData(form);
+        var payload = {};
+        for (var pair of data.entries()) {
+            var key = pair[0], value = pair[1];
+            if (key === '_token' || key === '_method') continue;
+            if (value instanceof File) continue;
+            payload[key] = value;
+        }
+
+        // The is_active checkbox: if unchecked it won't appear in FormData.
+        // Explicitly set to '0' when absent so the backend receives it correctly.
+        if (!('is_active' in payload)) {
+            payload['is_active'] = '0';
+        }
+
+        if (!window.WarmUpOffline || !window.WarmUpOffline.queueTrainerCreate) {
+            console.error('[WarmUp Offline] queueTrainerCreate not available.');
+            showOfflineBanner('Could not save trainer offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        try {
+            await window.WarmUpOffline.queueTrainerCreate(payload);
+        } catch (err) {
+            console.error('[WarmUp Offline] Failed to queue trainer_create:', err);
+            showOfflineBanner('Could not save trainer offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        showOfflineBanner(
+            'Trainer saved offline and will sync automatically when you reconnect.',
+            '#DCFCE7', '#15803D'
+        );
+
+        // Redirect to trainers list after a brief pause — same destination
+        // as the online success redirect.
+        setTimeout(function () {
+            window.location.href = '{{ route('trainers.index') }}';
+        }, 2500);
+    });
+
+    /**
+     * Inject a dismissible inline banner above the form.
+     * Matches the flash-message styling used by the app layout.
+     */
+    function showOfflineBanner(message, bgColor, textColor) {
+        var existing = document.getElementById('offline-queue-banner');
+        if (existing) existing.remove();
+
+        var banner = document.createElement('div');
+        banner.id = 'offline-queue-banner';
+        banner.style.cssText = [
+            'display:flex', 'align-items:center', 'gap:12px',
+            'padding:14px 16px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'margin-bottom:16px',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        banner.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" ' +
+            'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ' +
+            'style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        // Insert before the form
+        form.parentNode.insertBefore(banner, form);
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+});
+</script>
+@endpush

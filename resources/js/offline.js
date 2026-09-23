@@ -132,6 +132,34 @@ export function queueSettingsUpdate(payload, currentUpdatedAt) {
     });
 }
 
+/**
+ * Queue an offline attendance record (mark present or absent).
+ * The backend handler is idempotent: if a record for member_id+date already
+ * exists it is returned unchanged, so duplicate queuing is safe.
+ * @param {Object} payload - { member_id, date, status, check_in_time? }
+ */
+export function queueAttendanceCreate(payload) {
+    return queueAction('attendance_create', payload);
+}
+
+/**
+ * Queue an offline expense creation.
+ * File uploads (receipt_image) are not supported offline and must be
+ * added when back online.
+ * @param {Object} payload - { expense_category_id, title, amount, expense_date, paid_to?, notes? }
+ */
+export function queueExpenseCreate(payload) {
+    return queueAction('expense_create', payload);
+}
+
+/**
+ * Queue an offline fee payment record.
+ * @param {Object} payload - { member_id, member_membership_id, amount_paid, payment_date, payment_method, notes? }
+ */
+export function queueFeePaymentCreate(payload) {
+    return queueAction('fee_payment_create', payload);
+}
+
 // ─── Get all queued actions ───────────────────────────────────────────────────
 async function getAllQueued() {
     const database = await openDB();

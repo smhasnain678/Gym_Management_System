@@ -16,7 +16,9 @@
         </div>
     @endif
 
-    <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form action="{{ route('settings.update') }}" method="POST"
+          id="settings-form"
+          enctype="multipart/form-data" class="space-y-6">
         @csrf
         @method('PATCH')
 
@@ -326,6 +328,109 @@
         if (rest.length > 0) html += `<span style="color:${secondary}">${rest}</span>`;
         document.getElementById('preview_gym_name').innerHTML = html;
     }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Offline-First: Settings form ─────────────────────────────────────────
+    // When ONLINE  → native form submission proceeds unchanged (PATCH to server).
+    // When OFFLINE → intercept, queue as `settings_update` via the existing
+    //                IndexedDB action_queue (LWW via client_updated_at), then
+    //                show an inline banner on the same page.
+    //                Note: gym_logo (file upload) is not supported offline.
+    //                Branding-only fields (primary_color, secondary_color,
+    //                brand_split_position) are not in the backend allowed list
+    //                and are therefore not included in the offline payload.
+
+    var settingsForm = document.getElementById('settings-form');
+    if (!settingsForm) return;
+
+    // Server-rendered settings updated_at — embedded at page-load time for LWW.
+    var SETTINGS_UPDATED_AT = '{{ $settings->updated_at->toISOString() }}';
+
+    settingsForm.addEventListener('submit', async function (e) {
+        // If online, let the browser submit normally.
+        if (navigator.onLine) return;
+
+        // ── We are OFFLINE ────────────────────────────────────────────────
+        e.preventDefault();
+
+        var formData = new FormData(settingsForm);
+        var payload  = {};
+
+        // Allowed fields from OfflineSyncController::handleSettingsUpdate
+        var allowed = [
+            'gym_name', 'owner_name', 'contact_email', 'contact_phone',
+            'address', 'country', 'city', 'currency', 'currency_symbol',
+            'timezone', 'language', 'theme', 'date_format', 'time_format',
+        ];
+
+        for (var pair of formData.entries()) {
+            var key = pair[0], value = pair[1];
+            if (key === '_token' || key === '_method') continue;
+            if (value instanceof File) continue;          // skip gym_logo
+            if (!allowed.includes(key)) continue;         // skip branding fields
+            payload[key] = value;
+        }
+
+        if (!window.WarmUpOffline || !window.WarmUpOffline.queueSettingsUpdate) {
+            console.error('[WarmUp Offline] queueSettingsUpdate not available.');
+            showSettingsBanner('Could not save settings offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        try {
+            // queueSettingsUpdate(payload, clientUpdatedAt) → action type: settings_update
+            await window.WarmUpOffline.queueSettingsUpdate(payload, SETTINGS_UPDATED_AT);
+        } catch (err) {
+            console.error('[WarmUp Offline] Failed to queue settings_update:', err);
+            showSettingsBanner('Could not save settings offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        showSettingsBanner(
+            'Settings saved offline and will sync automatically when you reconnect. ' +
+            'Logo and branding color changes require an online connection.',
+            '#DCFCE7', '#15803D'
+        );
+        // No redirect — the user stays on the Settings page.
+    });
+
+    /**
+     * Inject a dismissible inline banner at the top of the settings content.
+     * Matches the flash-message styling used by the app layout.
+     */
+    function showSettingsBanner(message, bgColor, textColor) {
+        var existing = document.getElementById('offline-settings-banner');
+        if (existing) existing.remove();
+
+        var banner = document.createElement('div');
+        banner.id = 'offline-settings-banner';
+        banner.style.cssText = [
+            'display:flex', 'align-items:center', 'gap:12px',
+            'padding:14px 16px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'margin-bottom:16px',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        banner.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" ' +
+            'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ' +
+            'style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        // Insert at the top of the settings content div
+        var container = settingsForm.parentNode;
+        container.insertBefore(banner, container.firstChild);
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+});
 </script>
 @endpush
 @endsection

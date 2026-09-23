@@ -172,7 +172,7 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                         <button type="button"
-                                onclick="openPayModal({{ $mm->id }}, '{{ addslashes($mm->member->name) }}', '{{ addslashes($mm->membershipPlan->name ?? 'N/A') }}', {{ $mm->remaining_amount }}, {{ $mm->total_amount }}, {{ $mm->paid_amount }})"
+                                onclick="openPayModal({{ $mm->id }}, '{{ addslashes($mm->member->name) }}', '{{ addslashes($mm->membershipPlan->name ?? 'N/A') }}', {{ $mm->remaining_amount }}, {{ $mm->total_amount }}, {{ $mm->paid_amount }}, {{ $mm->member->id }})"
                                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors hover:opacity-90"
                                 style="background-color:#22C55E;">
                             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
@@ -269,6 +269,8 @@
         <form action="{{ route('fees.pay') }}" method="POST" class="p-4 space-y-3 overflow-y-auto flex-1" id="pay-form">
             @csrf
             <input type="hidden" name="member_membership_id" id="modal-mm-id">
+            {{-- Hidden field for member_id — required by offline fee_payment_create handler --}}
+            <input type="hidden" name="member_id" id="modal-member-id">
 
             {{-- Member/Plan info banner --}}
             <div class="p-3 rounded-xl text-sm bg-blue-50 border border-blue-100 text-blue-800">
@@ -354,8 +356,10 @@
 
 @push('scripts')
 <script>
-function openPayModal(mmId, memberName, planName, remaining, total, paid) {
+function openPayModal(mmId, memberName, planName, remaining, total, paid, memberId) {
     document.getElementById('modal-mm-id').value = mmId;
+    // Store member_id for offline fee_payment_create queuing
+    document.getElementById('modal-member-id').value = memberId || '';
     document.getElementById('modal-member-name').textContent = memberName;
     document.getElementById('modal-plan-name').textContent = planName;
     document.getElementById('modal-total').textContent = parseFloat(total).toLocaleString('en-PK', {minimumFractionDigits: 2});
@@ -369,7 +373,7 @@ function closePayModal() {
     document.getElementById('pay-modal').classList.add('hidden');
 }
 // Re-open modal with old input on validation error
-@if($errors->any() && old('member_membership_id'))
+    @if($errors->any() && old('member_membership_id'))
 document.addEventListener('DOMContentLoaded', () => {
     // Reopen modal if there was a validation error
     const mmId = '{{ old("member_membership_id") }}';
@@ -379,5 +383,111 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 @endif
+</script>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Offline-First: Record Payment modal ───────────────────────────────────
+    // When ONLINE  → native form submission proceeds unchanged.
+    // When OFFLINE → intercept pay-form submit, queue as `fee_payment_create`
+    //                via the existing IndexedDB action_queue, close the modal,
+    //                and show a confirmation toast.
+
+    var payForm = document.getElementById('pay-form');
+    if (!payForm) return;
+
+    payForm.addEventListener('submit', async function (e) {
+        // If online, let the form submit normally.
+        if (navigator.onLine) return;
+
+        // ── We are OFFLINE ────────────────────────────────────────────────
+        e.preventDefault();
+
+        var memberId           = (payForm.querySelector('[name="member_id"]')           || {}).value || '';
+        var memberMembershipId = (payForm.querySelector('[name="member_membership_id"]') || {}).value || '';
+        var amountPaid         = (payForm.querySelector('[name="amount_paid"]')          || {}).value || '';
+        var paymentDate        = (payForm.querySelector('[name="payment_date"]')         || {}).value || '';
+        var paymentMethod      = (payForm.querySelector('[name="payment_method"]')       || {}).value || 'cash';
+        var notes              = (payForm.querySelector('[name="notes"]')                || {}).value || '';
+
+        if (!memberId || !memberMembershipId || !amountPaid) {
+            showFeeToast('Missing required fields — payment could not be queued offline.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        if (!window.WarmUpOffline || !window.WarmUpOffline.queueFeePaymentCreate) {
+            console.error('[WarmUp Offline] queueFeePaymentCreate not available.');
+            showFeeToast('Offline queue not ready — please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        var payload = {
+            member_id:            memberId,
+            member_membership_id: memberMembershipId,
+            amount_paid:          amountPaid,
+            payment_date:         paymentDate,
+            payment_method:       paymentMethod,
+        };
+        if (notes) payload.notes = notes;
+
+        try {
+            await window.WarmUpOffline.queueFeePaymentCreate(payload);
+        } catch (err) {
+            console.error('[WarmUp Offline] Failed to queue fee_payment_create:', err);
+            showFeeToast('Could not save payment offline. Please try again.', '#FEE2E2', '#DC2626');
+            return;
+        }
+
+        // Close the modal and show a toast — same feel as online success.
+        closePayModal();
+        showFeeToast(
+            'Payment queued offline and will sync automatically when you reconnect.',
+            '#DCFCE7', '#15803D'
+        );
+    });
+
+    /**
+     * Display a brief fixed toast at the top of the viewport.
+     * Auto-dismisses after 4 seconds.
+     */
+    function showFeeToast(message, bgColor, textColor) {
+        var existing = document.getElementById('offline-fee-toast');
+        if (existing) existing.remove();
+
+        var toast = document.createElement('div');
+        toast.id = 'offline-fee-toast';
+        toast.style.cssText = [
+            'position:fixed', 'top:20px', 'left:50%',
+            'transform:translateX(-50%)',
+            'z-index:9999',
+            'display:flex', 'align-items:center', 'gap:10px',
+            'padding:14px 20px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'box-shadow:0 4px 24px rgba(0,0,0,0.12)',
+            'max-width:90vw',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        toast.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"' +
+            ' fill="none" stroke="currentColor" stroke-width="2"' +
+            ' stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        document.body.appendChild(toast);
+
+        setTimeout(function () {
+            toast.style.opacity = '0';
+            setTimeout(function () { toast.remove(); }, 500);
+        }, 4000);
+    }
+});
 </script>
 @endpush

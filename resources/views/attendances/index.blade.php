@@ -324,3 +324,126 @@
 @endif
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Offline-First: Attendance forms ──────────────────────────────────────
+    // The attendance page contains multiple small inline forms (Mark Present,
+    // Mark Absent, Check Out) rather than a single page-level form.
+    // We use event delegation on `document` to intercept all of them.
+    //
+    // Supported offline:
+    //   attendance.store  (POST)  → queued as `attendance_create`
+    //
+    // NOT supported offline:
+    //   attendance.checkout (PATCH) → no `attendance_update` action type exists
+    //   in the backend OfflineSyncController. We surface a clear message rather
+    //   than introducing an incorrect workaround.
+
+    document.addEventListener('submit', async function (e) {
+        // Only intercept when offline.
+        if (navigator.onLine) return;
+
+        var form = e.target;
+        if (!form || form.tagName !== 'FORM') return;
+
+        var action = form.action || '';
+
+        // ── Mark Present / Mark Absent ────────────────────────────────────────
+        // These forms POST to /attendances (attendances.store).
+        if (action.match(/\/attendances\s*$/) || action.match(/\/attendances(\?.*)?$/)) {
+            e.preventDefault();
+
+            var memberId    = (form.querySelector('[name="member_id"]') || {}).value || '';
+            var date        = (form.querySelector('[name="date"]')      || {}).value || '';
+            var status      = (form.querySelector('[name="status"]')    || {}).value || 'present';
+            var checkInTime = (form.querySelector('[name="check_in_time"]') || {}).value || null;
+
+            if (!memberId || !date) {
+                showAttendanceToast('Could not queue attendance — missing required fields.', '#FEE2E2', '#DC2626');
+                return;
+            }
+
+            var payload = { member_id: memberId, date: date, status: status };
+            if (checkInTime) payload.check_in_time = checkInTime;
+
+            if (!window.WarmUpOffline || !window.WarmUpOffline.queueAttendanceCreate) {
+                console.error('[WarmUp Offline] queueAttendanceCreate not available.');
+                showAttendanceToast('Offline queue not ready — please try again.', '#FEE2E2', '#DC2626');
+                return;
+            }
+
+            try {
+                await window.WarmUpOffline.queueAttendanceCreate(payload);
+            } catch (err) {
+                console.error('[WarmUp Offline] Failed to queue attendance_create:', err);
+                showAttendanceToast('Could not queue attendance offline. Please try again.', '#FEE2E2', '#DC2626');
+                return;
+            }
+
+            var label = status === 'present' ? 'Present' : 'Absent';
+            showAttendanceToast(
+                'Marked ' + label + ' offline — will sync when you reconnect.',
+                '#DCFCE7', '#15803D'
+            );
+            return;
+        }
+
+        // ── Check Out (PATCH to /attendances/{id}/checkout) ───────────────────
+        // No `attendance_update` action type exists in the backend.
+        // Do NOT pretend to handle it; show an honest limitation message instead.
+        if (action.match(/\/attendances\/\d+\/checkout/)) {
+            e.preventDefault();
+            showAttendanceToast(
+                'Check-out cannot be recorded offline. Please reconnect first.',
+                '#FEF3C7', '#92400E'
+            );
+        }
+
+        // Any other forms on this page fall through and submit normally.
+    });
+
+    /**
+     * Display a brief fixed toast at the top of the viewport.
+     * Auto-dismisses after 4 seconds.
+     */
+    function showAttendanceToast(message, bgColor, textColor) {
+        var existing = document.getElementById('offline-attendance-toast');
+        if (existing) existing.remove();
+
+        var toast = document.createElement('div');
+        toast.id = 'offline-attendance-toast';
+        toast.style.cssText = [
+            'position:fixed', 'top:20px', 'left:50%',
+            'transform:translateX(-50%)',
+            'z-index:9999',
+            'display:flex', 'align-items:center', 'gap:10px',
+            'padding:14px 20px', 'border-radius:14px',
+            'font-size:0.875rem', 'font-weight:500',
+            'box-shadow:0 4px 24px rgba(0,0,0,0.12)',
+            'max-width:90vw',
+            'background-color:' + bgColor,
+            'color:' + textColor,
+            'transition:opacity 0.5s ease',
+        ].join(';');
+
+        toast.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"' +
+            ' fill="none" stroke="currentColor" stroke-width="2"' +
+            ' stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">' +
+            '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>' +
+            '<polyline points="22 4 12 13.01 9 10.01"/></svg>' +
+            '<span>' + message + '</span>';
+
+        document.body.appendChild(toast);
+
+        setTimeout(function () {
+            toast.style.opacity = '0';
+            setTimeout(function () { toast.remove(); }, 500);
+        }, 4000);
+    }
+});
+</script>
+@endpush
