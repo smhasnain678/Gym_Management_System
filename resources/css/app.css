@@ -680,19 +680,22 @@ html:not([data-theme="dark"]) #sidebar nav .border-t.border-slate-700 {
     border-color: rgba(226, 232, 240, 0.70) !important;
 }
 
-/* Gym name — visible on light glass sidebar */
-html:not([data-theme="dark"]) #sidebar .text-xl.font-bold {
-    color: #0F172A;
-}
-
 /* Nav link default state — dark text on light glass */
 html:not([data-theme="dark"]) #sidebar a.text-slate-400 {
     color: #64748B !important;
 }
 
+/* BUG 1 FIX: Hover state — override Tailwind hover:text-white + hover:bg-slate-800
+   that render dark-bg + dark-text in light mode. Use a soft tinted background instead. */
 html:not([data-theme="dark"]) #sidebar a.text-slate-400:hover {
     color: #0F172A !important;
-    background-color: rgba(15, 23, 42, 0.05) !important;
+    background-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Override the Tailwind hover:bg-slate-800 utility in light mode sidebar */
+html:not([data-theme="dark"]) #sidebar a:not(.sidebar-link-active):hover {
+    background-color: rgba(15, 23, 42, 0.06) !important;
+    color: #0F172A !important;
 }
 
 /* Nav section labels */
@@ -786,6 +789,21 @@ html:not([data-theme="dark"]) .glass-stat-card {
 html:not([data-theme="dark"]) .glass-stat-card:hover {
     box-shadow: 0 6px 24px rgba(15, 23, 42, 0.10), 0 1px 0 rgba(255,255,255,0.8) inset !important;
     transform: translateY(-1px);
+}
+
+/* BUG 2 FIX: Stat card text block — prevent long values (negative numbers, large
+   currency strings) from overflowing or pushing the icon out of alignment.
+   The text wrapper (second child div) gets min-width:0 + overflow-hidden so the
+   card stays fixed-width regardless of value length. Applied to both light/dark. */
+.glass-stat-card > div:last-child {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.glass-stat-card > div:last-child > p:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ── 5. DASHBOARD PANELS (bg-white cards/widgets) — glass polish ──
@@ -928,4 +946,22 @@ html[data-theme="dark"] main .bg-white.rounded-2xl {
 /* Dark mode: body bg */
 html[data-theme="dark"] body {
     background-color: #0D1117 !important;
+}
+
+/* BUG 3 FIX — Settings page branding preview overflow (horizontal scrollbar).
+   The preview box's inner span has Tailwind's whitespace-pre which causes the
+   text to never wrap/clip, creating a horizontal scrollbar when the gym name
+   is long or the sidebar is narrow after glassmorphism padding changes.
+   Scoped narrowly: overflow-x hidden on the preview row + nowrap+ellipsis on
+   the span forces clipping within the box without a scrollbar.              */
+div.bg-slate-800.rounded-xl.flex.items-center.gap-2 {
+    overflow-x: hidden;
+}
+
+#preview_gym_name {
+    min-width: 0;
+    flex: 1 1 0;
+    overflow: hidden;
+    white-space: nowrap !important; /* overrides Tailwind whitespace-pre that causes scroll */
+    text-overflow: ellipsis;
 }
