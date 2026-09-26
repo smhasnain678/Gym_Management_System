@@ -807,11 +807,11 @@ html:not([data-theme="dark"]) .glass-stat-card:hover {
 }
 
 .glass-stat-card > div:last-child > p:first-child {
-    /* Allow the value to wrap to next line rather than overflow.
-       word-break:break-all is the last resort for very long unbroken strings. */
-    overflow-wrap: break-word;
-    word-break: break-word;
-    /* Do NOT add: overflow:hidden, text-overflow:ellipsis, white-space:nowrap */
+    /* ITEM 2 FIX: Reduce font size and enforce nowrap so values fit cleanly on one line
+       without truncating, wrapping, or pushing the icon on small screens. */
+    font-size: 1.125rem !important; /* text-lg */
+    line-height: 1.75rem !important;
+    white-space: nowrap;
 }
 
 /* ── 5. DASHBOARD PANELS (bg-white cards/widgets) — glass polish ──
@@ -974,28 +974,36 @@ div.bg-slate-800.rounded-xl.flex.items-center.gap-2 {
     text-overflow: ellipsis;
 }
 
-/* ── ISSUE 3 FIX: Sidebar logo two-tone text ─────────────────────────────────
-   The logo <span> elements use inline style="color: var(--gym-primary)"
-   which always wins over class selectors (inline style specificity = 1,0,0,0).
-   The root cause: glassmorphism changed the sidebar from dark (#0F172A) to
-   light glass, so a user-configured white primary color (which was readable
-   on dark) became invisible on the new light background.
-
-   Fix: CSS classes .sidebar-logo-primary and .sidebar-logo-secondary are added
-   to the Blade spans so we can provide a light-mode text-shadow that ensures
-   any color remains readable regardless of the sidebar background.
-   The inline style color is NOT overridden — user-configured colors still apply.
-   The text-shadow adds a subtle dark halo that makes even white text legible. */
-html:not([data-theme="dark"]) .sidebar-logo-primary,
-html:not([data-theme="dark"]) .sidebar-logo-secondary {
-    /* Subtle dark outline/shadow makes any configured color readable on
-       the light glass sidebar — even white (#fff) will be legible.
-       The shadow is intentionally faint so it doesn't distort vibrant colors. */
-    text-shadow: 0 0 6px rgba(15, 23, 42, 0.22), 0 1px 2px rgba(15, 23, 42, 0.16);
+/* ITEM 3 FIX: Settings page logo preview contrast.
+   A dual light/dark text-shadow halo ensures that both the Primary and
+   Secondary colored text spans remain readable against the fixed dark
+   background of the preview box, regardless of whether the user picks a
+   very dark or very light color. */
+#preview_gym_name span {
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.7), 0 0 6px rgba(0, 0, 0, 0.8) !important;
 }
 
-/* Dark mode: logo spans on dark sidebar — light text-shadow instead */
-html[data-theme="dark"] .sidebar-logo-primary,
+/* ── ITEM 1 FIX: Sidebar logo auto-adapting contrast ─────────────────────────
+   The .sidebar-logo-primary ("Warm") auto-adapts its lightness depending on the
+   theme, while preserving the user's saved hex color as the base.
+   In light mode, it mixes with black. In dark mode, it mixes with white.
+   The .sidebar-logo-secondary ("Up") remains unchanged per requirements.
+   All text-shadows are removed for a clean flat text look. */
+
+/* Light mode: darken primary color */
+html:not([data-theme="dark"]) .sidebar-logo-primary {
+    color: color-mix(in srgb, var(--gym-primary), black 45%) !important;
+    text-shadow: none !important;
+}
+
+/* Dark mode: lighten primary color */
+html[data-theme="dark"] .sidebar-logo-primary {
+    color: color-mix(in srgb, var(--gym-primary), white 45%) !important;
+    text-shadow: none !important;
+}
+
+/* Secondary color span — flat text with no shadow in both modes */
+html:not([data-theme="dark"]) .sidebar-logo-secondary,
 html[data-theme="dark"] .sidebar-logo-secondary {
-    text-shadow: none; /* dark sidebar already provides contrast for most colors */
+    text-shadow: none !important;
 }
