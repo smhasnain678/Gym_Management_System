@@ -974,14 +974,6 @@ div.bg-slate-800.rounded-xl.flex.items-center.gap-2 {
     text-overflow: ellipsis;
 }
 
-/* ITEM 3 FIX: Settings page logo preview contrast.
-   A dual light/dark text-shadow halo ensures that both the Primary and
-   Secondary colored text spans remain readable against the fixed dark
-   background of the preview box, regardless of whether the user picks a
-   very dark or very light color. */
-#preview_gym_name span {
-    text-shadow: 0 0 3px rgba(255, 255, 255, 0.7), 0 0 6px rgba(0, 0, 0, 0.8) !important;
-}
 
 /* ── ITEM 1 FIX: Sidebar logo auto-adapting contrast ─────────────────────────
    The .sidebar-logo-primary ("Warm") auto-adapts its lightness depending on the

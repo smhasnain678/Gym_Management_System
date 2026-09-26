@@ -240,7 +240,7 @@
                                     $primary   = $settings->primary_color ?? '#22C55E';
                                     $secondary = $settings->secondary_color ?? '#16A34A';
                                 @endphp
-                                <span style="color: {{ $primary }};">{{ $firstPartPreview }}</span>@if(mb_strlen($secondPartPreview) > 0)<span style="color: {{ $secondary }};">{{ $secondPartPreview }}</span>@endif
+                                <span style="color: {{ $primary }}; background: rgba(255,255,255,0.85); padding: 2px 6px; border-radius: 4px;">{{ $firstPartPreview }}</span>@if(mb_strlen($secondPartPreview) > 0)<span style="color: {{ $secondary }}; background: rgba(17,24,39,0.85); padding: 2px 6px; border-radius: 4px; margin-left: 2px;">{{ $secondPartPreview }}</span>@endif
                             </span>
                         </div>
                     </div>
@@ -324,8 +324,8 @@
         const first = gymName.substring(0, splitPos);
         const rest = gymName.substring(splitPos);
         
-        let html = `<span style="color:${primary}">${first}</span>`;
-        if (rest.length > 0) html += `<span style="color:${secondary}">${rest}</span>`;
+        let html = `<span style="color:${primary}; background: rgba(255,255,255,0.85); padding: 2px 6px; border-radius: 4px;">${first}</span>`;
+        if (rest.length > 0) html += `<span style="color:${secondary}; background: rgba(17,24,39,0.85); padding: 2px 6px; border-radius: 4px; margin-left: 2px;">${rest}</span>`;
         document.getElementById('preview_gym_name').innerHTML = html;
     }
 </script>
