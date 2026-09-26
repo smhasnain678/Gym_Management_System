@@ -77,7 +77,7 @@
                 $secondPart = mb_substr($gymName, $splitPos);
             @endphp
             <span class="text-xl font-bold">
-                <span style="color: var(--gym-primary);">{{ $firstPart }}</span>@if(mb_strlen($secondPart) > 0)<span style="color: var(--gym-secondary);">{{ $secondPart }}</span>@endif
+                <span class="sidebar-logo-primary" style="color: var(--gym-primary);">{{ $firstPart }}</span>@if(mb_strlen($secondPart) > 0)<span class="sidebar-logo-secondary" style="color: var(--gym-secondary);">{{ $secondPart }}</span>@endif
             </span>
         </div>
 

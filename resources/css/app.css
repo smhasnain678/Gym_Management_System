@@ -704,9 +704,13 @@ html:not([data-theme="dark"]) #sidebar p[style*="color:#64748B"] {
     color: #94A3B8 !important;
 }
 
-/* Active nav link — green accent on light sidebar */
+/* Active nav link — light mode glass sidebar.
+   IMPORTANT: We use #22C55E hardcoded (not var(--gym-primary)) because --gym-primary
+   is a user-configurable value that could be any color (e.g. white), making the
+   active link background unreadable. The active nav accent is always safe green.
+   The logo/branding colors are separately controlled by .sidebar-logo-primary/secondary. */
 html:not([data-theme="dark"]) .sidebar-link-active {
-    background-color: var(--gym-primary, #22C55E) !important;
+    background-color: #22C55E !important;
     color: #ffffff !important;
     box-shadow: 0 2px 8px rgba(34, 197, 94, 0.30) !important;
 }
@@ -791,19 +795,23 @@ html:not([data-theme="dark"]) .glass-stat-card:hover {
     transform: translateY(-1px);
 }
 
-/* BUG 2 FIX: Stat card text block — prevent long values (negative numbers, large
-   currency strings) from overflowing or pushing the icon out of alignment.
-   The text wrapper (second child div) gets min-width:0 + overflow-hidden so the
-   card stays fixed-width regardless of value length. Applied to both light/dark. */
+/* ISSUE 1 FIX: Stat card text block — prevent long values (negative numbers, large
+   currency strings) from pushing the icon out of alignment, WITHOUT truncating
+   the number. The text wrapper gets min-width:0 so it can shrink within the
+   flex container. Values wrap to a second line if needed — they are NEVER clipped
+   or replaced with ellipsis. Applied to both light and dark themes. */
 .glass-stat-card > div:last-child {
     min-width: 0;
-    overflow: hidden;
+    flex: 1 1 0;
+    /* no overflow:hidden — the text must remain fully visible */
 }
 
 .glass-stat-card > div:last-child > p:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /* Allow the value to wrap to next line rather than overflow.
+       word-break:break-all is the last resort for very long unbroken strings. */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    /* Do NOT add: overflow:hidden, text-overflow:ellipsis, white-space:nowrap */
 }
 
 /* ── 5. DASHBOARD PANELS (bg-white cards/widgets) — glass polish ──
@@ -964,4 +972,30 @@ div.bg-slate-800.rounded-xl.flex.items-center.gap-2 {
     overflow: hidden;
     white-space: nowrap !important; /* overrides Tailwind whitespace-pre that causes scroll */
     text-overflow: ellipsis;
+}
+
+/* ── ISSUE 3 FIX: Sidebar logo two-tone text ─────────────────────────────────
+   The logo <span> elements use inline style="color: var(--gym-primary)"
+   which always wins over class selectors (inline style specificity = 1,0,0,0).
+   The root cause: glassmorphism changed the sidebar from dark (#0F172A) to
+   light glass, so a user-configured white primary color (which was readable
+   on dark) became invisible on the new light background.
+
+   Fix: CSS classes .sidebar-logo-primary and .sidebar-logo-secondary are added
+   to the Blade spans so we can provide a light-mode text-shadow that ensures
+   any color remains readable regardless of the sidebar background.
+   The inline style color is NOT overridden — user-configured colors still apply.
+   The text-shadow adds a subtle dark halo that makes even white text legible. */
+html:not([data-theme="dark"]) .sidebar-logo-primary,
+html:not([data-theme="dark"]) .sidebar-logo-secondary {
+    /* Subtle dark outline/shadow makes any configured color readable on
+       the light glass sidebar — even white (#fff) will be legible.
+       The shadow is intentionally faint so it doesn't distort vibrant colors. */
+    text-shadow: 0 0 6px rgba(15, 23, 42, 0.22), 0 1px 2px rgba(15, 23, 42, 0.16);
+}
+
+/* Dark mode: logo spans on dark sidebar — light text-shadow instead */
+html[data-theme="dark"] .sidebar-logo-primary,
+html[data-theme="dark"] .sidebar-logo-secondary {
+    text-shadow: none; /* dark sidebar already provides contrast for most colors */
 }
