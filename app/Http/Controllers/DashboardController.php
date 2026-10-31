@@ -69,7 +69,10 @@ class DashboardController extends Controller
 
         // 12. Membership Statistics (Active memberships by plan)
         $membershipStats = MembershipPlan::withCount(['memberMemberships' => function ($query) {
-            $query->where('status', 'active');
+            $query->where('status', 'active')
+                  ->whereHas('member', function ($q) {
+                      $q->whereNull('members.deleted_at');
+                  });
         }])->get();
 
         return view('dashboard', compact(
