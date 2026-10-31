@@ -110,8 +110,8 @@ To deliver a clean, intuitive UX without confusing multi-role login forms, the p
 - **Strictly No Code-Only Authentication:** Member codes alone NEVER grant access. A password hashed with Bcrypt is strictly mandatory.
 - **Code Generation & Uniqueness:**
   - A unique `code` column (`VARCHAR(20) UNIQUE`) is added to the `members` table.
-  - Codes are auto-generated upon member creation via an Eloquent model hook or database sequence to guarantee sequential uniqueness.
-  - When migrating existing member records, a migration script backfills sequential unique codes (`MEM-0001`, `MEM-0002`, etc.) based on `id` order.
+  - Codes are generated using a dedicated `member_code_sequences` counter table with atomic increments. Eloquent model hooks or `MAX(id)` / `MAX(code)` queries are strictly prohibited to prevent concurrency collisions and string lexicographical sorting overflow (e.g., `'MEM-9999' > 'MEM-10000'`).
+  - When migrating existing member records, a migration script backfills sequential unique codes (`MEM-0001`, `MEM-0002`, etc.) based on `id` order and initializes the `member_code_sequences` counter table.
 - **Optional Login Linking for Existing Records:**
   - Existing member records in the `members` table do NOT require a linked user account to remain operational. They remain fully manageable by the Gym Owner and staff as offline/desk entities.
   - Generating a login account for an existing member is optional and performed on-demand by the Admin.
@@ -154,13 +154,15 @@ To prevent unnecessary complexity and avoid schema conflicts:
 - User Management is strictly restricted to the **Admin** role.
 
 ### 6.2 Permissions Architecture ⬜
-WarmUp enforces a robust two-tier authorization system:
+WarmUp enforces a robust two-tier authorization system governed by strict precedence:
 1. **Configurable Module-Level Permissions (Per User):**  
-   Staff accounts have configurable module access toggles stored in a dedicated `user_permissions` table (or structured JSON on `users`):
+   Staff accounts have configurable module access toggles stored in a dedicated `user_permissions` table:
    `user_id`, `module_name`, `is_enabled`.  
-   This allows an Admin to grant or revoke access to high-level modules (e.g., granting a specific Receptionist read-only access to Member Reports).
+   This allows an Admin to grant or revoke access to specific operational modules (e.g., granting a specific Receptionist read-only access to Member Reports).
 2. **Explicit Fixed Action Rules (Laravel Policies & Gates):**  
    Fine-grained action security is implemented using native Laravel Policies (`MemberPolicy`, `AttendancePolicy`, `FeePolicy`, `WorkoutPlanPolicy`, `DietPlanPolicy`). These enforce hardcoded security invariants that module toggles cannot override.
+3. **Permission Precedence Invariant (Deny Overrides Allow):**  
+   Fixed role restrictions strictly supersede any individual user module permission toggles. A user-level toggle in `user_permissions` must NEVER grant access that the user's base role is prohibited from having. Deny takes precedence across all checks. Administrative modules (`User Management`, `Expenses`, `System Settings`, `Database Backup`, `Activity Logs`) are fixed invariants and can never be granted to non-Admin accounts under any circumstances.
 
 ### 6.3 Role Permissions Matrix
 
@@ -188,6 +190,7 @@ WarmUp enforces a robust two-tier authorization system:
 1. **Trainer Scoping Invariant:** Any query fetching members, attendance, or plan assignments for a user with `role = 'trainer'` MUST append `where('trainer_id', $user->trainer->id)`. Unauthorized access attempts immediately return HTTP `403 Forbidden`.
 2. **Receptionist Financial Guard:** Receptionists can create `fee_payments` records and print receipts, but are strictly barred from deleting payments, altering closed transaction records, or accessing expense sheets and net profit figures.
 3. **Member Self-Isolation Invariant:** Members can query only records where `member_id == Auth::user()->member->id`. Any URL manipulation attempting to access another member's profile or plans fails policy authorization.
+4. **Precedence Enforcement Invariant:** Role denial checks execute prior to querying `user_permissions`. If a user's base role prohibits an action or module, authorization immediately aborts with `403 Forbidden` without evaluating permissive toggles.
 
 ---
 
@@ -322,7 +325,8 @@ An administrative console for provisioning and governing system access.
 - Reset user credentials or trigger password reset workflows.
 
 ### 9.2 Workout Plan Management Module ⬜
-A two-tier exercise prescription engine:
+A two-tier exercise prescription engine (Online-Only during FYP evaluation):
+- **Execution Scope:** Workout plan creation, assignment, and member viewing operate strictly as online modules for the February 2027 FYP. Client-side offline creation and background synchronization are deferred.
 - **Tier 1: Master Templates (`workout_templates` & `workout_template_exercises`)**
   - Reusable routines created by Admins or Trainers (e.g., "Beginner 3-Day Split", "Hypertrophy Upper/Lower").
   - Configurable attributes: Routine name, fitness objective (Bulking, Cutting, Maintenance), difficulty level (Beginner, Intermediate, Advanced), notes.
@@ -333,7 +337,8 @@ A two-tier exercise prescription engine:
   - Members have read-only access to their routine via the Member Portal.
 
 ### 9.3 Diet & Nutrition Plan Management Module ⬜
-A structured dietary guidance module:
+A structured dietary guidance module (Online-Only during FYP evaluation):
+- **Execution Scope:** Diet plan creation, assignment, and member viewing operate strictly as online modules for the February 2027 FYP. Client-side offline creation and background synchronization are deferred.
 - **Tier 1: Master Templates (`diet_templates` & `diet_template_meals`)**
   - Reusable nutritional templates created by Admins or Trainers (e.g., "2500 kcal Lean Bulk", "Keto Fat Loss").
   - Configurable attributes: Plan name, goal, target calories, macronutrient split (protein g, carbs g, fat g).
@@ -391,11 +396,11 @@ Every action submitted in the offline sync payload is individually authorized an
 | `trainer_create` | ✅ | ❌ | ❌ | Admin only. |
 | `trainer_update` | ✅ | ❌ | ❌ | Admin only. |
 | `settings_update` | ✅ | ❌ | ❌ | Admin only. |
-| `workout_assign` | ✅ | ✅ | ❌ | **If Trainer:** Verifies member is assigned to authenticated trainer. |
-| `diet_assign` | ✅ | ✅ | ❌ | **If Trainer:** Verifies member is assigned to authenticated trainer. |
+| `workout_assign` | 💤 Deferred | 💤 Deferred | ❌ | Deferred post-FYP; online-only during FYP evaluation. |
+| `diet_assign` | 💤 Deferred | 💤 Deferred | ❌ | Deferred post-FYP; online-only during FYP evaluation. |
 
 ### 10.4 Stale Offline Trainer Action Resolution ⬜
-- **Revalidation at Sync:** When a trainer syncs offline attendance or workout assignments, the server verifies current record assignment: `member.trainer_id == auth_user.trainer_id`.
+- **Revalidation at Sync:** When a trainer syncs offline attendance, the server verifies current record assignment: `member.trainer_id == auth_user.trainer_id`.
 - **Handling Reassigned Members:** If a member was reassigned to another trainer on the server while the offline trainer was disconnected:
   - The server **rejects the stale action** with a structured conflict response:
     `{ status: 'conflict', code: 'STALE_TRAINER_ASSIGNMENT', message: 'Member assignment has changed on server.' }`
@@ -405,16 +410,16 @@ Every action submitted in the offline sync payload is individually authorized an
 
 ### 10.5 Offline Data Encryption & Key Lifecycle ⬜
 > [!IMPORTANT]
-> **Technical Key Management Requirement:** An ephemeral in-memory-only key is unacceptable because it makes queued data unrecoverable upon page refresh, tab closure, or browser restart while offline. The implementation-level key management design must undergo technical proof-of-concept validation before code implementation.
+> **Technical Key Management Requirement:** Per-user encryption key isolation is adopted as the selected architectural direction. However, final implementation is strictly conditional on a successful Proof of Concept (POC) validating key persistence across browser restarts, offline decryption without network, and isolation preventing cross-user queue decryption on shared workstations.
 
 #### Security & Lifecycle Requirements:
-1. **At-Rest Encryption in IndexedDB:** All sensitive offline data (queued actions in `action_queue`, cached member lists, plan templates) must be encrypted using **AES-GCM-256** via the native **Web Crypto API** (`window.crypto.subtle`).
-2. **User-Specific Storage Namespaces:**
+1. **At-Rest Encryption in IndexedDB:** All sensitive offline data (queued actions in `action_queue`, cached member lists) must be encrypted using **AES-GCM-256** via the native **Web Crypto API** (`window.crypto.subtle`).
+2. **Per-User Key Isolation & Storage Namespaces:**
    - IndexedDB object stores must be partitioned or namespaced by `user_id` (e.g., `user_queue_{user_id}`).
-   - User A cannot access, view, or decrypt the offline queue of User B on the same shared workstation.
-3. **Authorized Offline Recovery:**
+   - Cryptographic keys are isolated per user (e.g., password-derived key wrapping or per-user non-extractable CryptoKey storage). User B cannot decrypt or inspect the offline queue of User A on the same shared workstation.
+3. **Authorized Offline Recovery (POC Conditional):**
    - The cryptographic key must survive page refreshes, tab closures, and browser restarts during network outages.
-   - Key persistence must be bound to authenticated user credentials (e.g., PBKDF2 key derivation using user credential entropy and an origin-bound salt, stored as a non-extractable CryptoKey in IndexedDB).
+   - Key persistence across browser restarts and offline recovery must be validated via a formal technical POC prior to code implementation.
 4. **Queue Preservation on Logout:**
    - **Un-synced actions are NEVER automatically purged on logout or user switching.**
    - If a receptionist or trainer logs out during an internet outage, their pending queue remains safely encrypted in their user namespace.
@@ -449,6 +454,7 @@ Planned v2.0 Schema Migrations:
   12. Create `diet_template_meals` table
   13. Create `member_diet_plans` table
   14. Create `member_diet_meals` table
+  15. Create `member_code_sequences` table (atomic counter table for race-condition-safe sequential member codes)
 ```
 
 ### Foreign-Key Deletion & SQLite Compatibility Rules:
@@ -596,6 +602,7 @@ The following enterprise capabilities remain intentionally excluded from the FYP
 - Native mobile applications (iOS / Android).
 - Cloud deployment and managed hosting infrastructure.
 - Automatic scheduled remote cloud backups.
+- Offline creation and synchronization of workout and diet plan assignments (online-only during FYP evaluation; deferred to post-FYP SaaS).
 
 ---
 
