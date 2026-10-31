@@ -48,8 +48,8 @@ class SettingsController extends Controller
         $validated = $request->validate([
             'gym_name'             => 'required|string|max:150',
             'gym_logo'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'primary_color'        => 'nullable|string|max:7',
-            'secondary_color'      => 'nullable|string|max:7',
+            'primary_color'        => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'secondary_color'      => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'brand_split_position' => 'nullable|integer|min:0',
             'owner_name'           => 'required|string|max:100',
             'contact_email'        => 'nullable|email|max:150',
