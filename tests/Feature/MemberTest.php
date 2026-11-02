@@ -811,4 +811,45 @@ class MemberTest extends TestCase
             'deleted_at' => null,
         ]);
     }
+
+    public function test_member_update_can_reuse_email_of_soft_deleted_member(): void
+    {
+        $deletedMember = $this->createMember(['email' => 'softdeleted@example.com']);
+        $deletedMember->delete();
+
+        $activeMember = $this->createMember(['email' => 'current@example.com']);
+
+        $response = $this->actingAs($this->createOwner())->put("/members/{$activeMember->id}", [
+            'name'         => 'Updated Member',
+            'email'        => 'softdeleted@example.com',
+            'phone'        => '03001234567',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('members', [
+            'id'    => $activeMember->id,
+            'email' => 'softdeleted@example.com',
+        ]);
+    }
+
+    public function test_member_update_cannot_use_email_of_another_active_member(): void
+    {
+        $otherActiveMember = $this->createMember(['email' => 'other@example.com']);
+        $memberToUpdate = $this->createMember(['email' => 'current@example.com']);
+
+        $response = $this->actingAs($this->createOwner())->put("/members/{$memberToUpdate->id}", [
+            'name'         => 'Updated Member',
+            'email'        => 'other@example.com',
+            'phone'        => '03001234567',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+
+        $response->assertSessionHasErrors(['email']);
+        $this->assertEquals('current@example.com', $memberToUpdate->fresh()->email);
+    }
 }

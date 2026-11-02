@@ -170,8 +170,7 @@ class TrainerController extends Controller
         $trainer->update(['is_active' => !$trainer->is_active]);
         $status = $trainer->is_active ? 'Activated' : 'Deactivated';
 
-        return redirect()
-            ->route('trainers.show', $trainer)
+        return back(fallback: route('trainers.show', $trainer))
             ->with('success', __('Trainer ":name" :status successfully.', ['name' => $trainer->name, 'status' => strtolower($status)]));
     }
 }

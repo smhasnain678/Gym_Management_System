@@ -50,7 +50,7 @@ class ProfileTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertSessionHas('success', __('Your profile has been updated successfully.'));
 
         $this->assertDatabaseHas('users', [
             'id'    => $user->id,
