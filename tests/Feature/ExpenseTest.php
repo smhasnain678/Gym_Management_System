@@ -173,7 +173,7 @@ class ExpenseTest extends TestCase
         Expense::create(['title' => 'E2', 'expense_category_id' => $category->id, 'amount' => 250, 'expense_date' => now()->format('Y-m-d')]);
         
         // Last month
-        Expense::create(['title' => 'E3', 'expense_category_id' => $category->id, 'amount' => 500, 'expense_date' => now()->subMonth()->format('Y-m-d')]);
+        Expense::create(['title' => 'E3', 'expense_category_id' => $category->id, 'amount' => 500, 'expense_date' => now()->startOfMonth()->subDay()->format('Y-m-d')]);
 
         $response = $this->actingAs($owner)->get('/expenses');
         $response->assertStatus(200);

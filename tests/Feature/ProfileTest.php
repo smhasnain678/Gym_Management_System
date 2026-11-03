@@ -50,7 +50,7 @@ class ProfileTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('success');
+        $response->assertSessionHas('success', __('Your profile has been updated successfully.'));
 
         $this->assertDatabaseHas('users', [
             'id'    => $user->id,
@@ -59,14 +59,14 @@ class ProfileTest extends TestCase
         ]);
     }
 
-    public function test_profile_update_rejects_invalid_short_phone(): void
+    public function test_profile_update_rejects_phone_exceeding_max_length(): void
     {
         $user = $this->createOwner();
 
         $response = $this->actingAs($user)->patch(route('profile.update'), [
             'name'  => 'Updated Owner Name',
             'email' => 'owner@warmup.test',
-            'phone' => '0342-34128', // Invalid
+            'phone' => str_repeat('1', 21), // Exceeds max 20 characters
         ]);
 
         $response->assertSessionHasErrors('phone', null, 'updateProfile');

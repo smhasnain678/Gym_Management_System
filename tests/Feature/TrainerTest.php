@@ -320,6 +320,30 @@ class TrainerTest extends TestCase
         $this->assertTrue($trainer->fresh()->is_active);
     }
 
+    public function test_toggle_status_redirects_back_to_index_when_submitted_from_index(): void
+    {
+        $trainer = $this->createTrainer(['is_active' => true]);
+
+        $response = $this->actingAs($this->createOwner())
+            ->from(route('trainers.index'))
+            ->patch("/trainers/{$trainer->id}/toggle-status");
+
+        $response->assertRedirect(route('trainers.index'));
+        $this->assertFalse($trainer->fresh()->is_active);
+    }
+
+    public function test_toggle_status_redirects_back_to_show_when_submitted_from_show(): void
+    {
+        $trainer = $this->createTrainer(['is_active' => true]);
+
+        $response = $this->actingAs($this->createOwner())
+            ->from(route('trainers.show', $trainer))
+            ->patch("/trainers/{$trainer->id}/toggle-status");
+
+        $response->assertRedirect(route('trainers.show', $trainer));
+        $this->assertFalse($trainer->fresh()->is_active);
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // 20. Delete trainer (no members)
     // ─────────────────────────────────────────────────────────────────────────

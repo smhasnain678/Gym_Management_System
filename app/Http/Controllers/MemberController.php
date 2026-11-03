@@ -75,7 +75,7 @@ class MemberController extends Controller
     {
         $validated = $request->validate([
             'name'                    => 'required|string|max:100',
-            'email'                   => 'nullable|email|max:150|unique:members,email',
+            'email'                   => ['nullable', 'email', 'max:150', Rule::unique('members', 'email')->whereNull('deleted_at')],
             'phone'                   => 'required|string|max:20',
             'date_of_birth'           => 'nullable|date|before:today',
             'gender'                  => ['required', Rule::in(['male', 'female', 'other'])],
@@ -214,7 +214,7 @@ class MemberController extends Controller
     {
         $validated = $request->validate([
             'name'                    => 'required|string|max:100',
-            'email'                   => ['nullable', 'email', 'max:150', Rule::unique('members', 'email')->ignore($member->id)],
+            'email'                   => ['nullable', 'email', 'max:150', Rule::unique('members', 'email')->ignore($member->id)->whereNull('deleted_at')],
             'phone'                   => 'required|string|max:20',
             'date_of_birth'           => 'nullable|date|before:today',
             'gender'                  => ['required', Rule::in(['male', 'female', 'other'])],
