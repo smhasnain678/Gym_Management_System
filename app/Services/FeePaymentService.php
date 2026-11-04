@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ActivityLog;
 use App\Models\FeePayment;
 use App\Models\MemberMembership;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class FeePaymentService
@@ -52,9 +51,13 @@ class FeePaymentService
             throw new \InvalidArgumentException("Invalid payment method: {$paymentMethod}.");
         }
 
-        // 4. Validate payment_date
-        $paymentDate = ! empty($data['payment_date']) ? Carbon::parse($data['payment_date'])->toDateString() : now()->toDateString();
-        $dueDate     = ! empty($data['due_date']) ? Carbon::parse($data['due_date'])->toDateString() : null;
+        // 4. Validate payment_date and due_date.
+        // offline.js always sends YYYY-MM-DD (from <input type="date">).
+        // We validate strictly against that format so relative words ('tomorrow')
+        // and garbage strings are rejected with a clean InvalidArgumentException
+        // rather than a raw Carbon exception message.
+        $paymentDate = $this->parseStrictDate($data['payment_date'] ?? null, 'payment_date', true);
+        $dueDate     = $this->parseStrictDate($data['due_date'] ?? null, 'due_date', false);
 
         // 5. Transaction with row-level locking
         return DB::transaction(function () use ($membership, $amountPaid, $paymentDate, $paymentMethod, $dueDate, $data) {
@@ -64,8 +67,8 @@ class FeePaymentService
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            // Strict overpayment guard against fresh balance
-            if ($amountPaid > (float) $lockedMembership->remaining_amount) {
+            // Strict overpayment guard against fresh balance (compare after rounding to 2dp)
+            if (round($amountPaid, 2) > round((float) $lockedMembership->remaining_amount, 2)) {
                 throw new \InvalidArgumentException(
                     'Payment of ' . number_format($amountPaid, 2) . ' exceeds the remaining balance of ' . number_format($lockedMembership->remaining_amount, 2) . '.'
                 );
@@ -106,5 +109,52 @@ class FeePaymentService
             return $payment;
         });
     }
-}
 
+    /**
+     * Validate a date string against the strict YYYY-MM-DD format that
+     * offline.js always produces from <input type="date">.
+     *
+     * Relative words ('tomorrow', 'next week') and malformed strings are
+     * rejected with a named InvalidArgumentException so the sync controller
+     * can return a clean per-action error message.
+     *
+     * @param  mixed        $value      Raw value from the client payload (must be string|null at runtime)
+     * @param  string       $field      Field name used in the error message
+     * @param  bool         $required   Whether a missing/empty value falls back to today
+     * @return string|null             Validated YYYY-MM-DD string, or null if optional and absent
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function parseStrictDate(mixed $value, string $field, bool $required): ?string
+    {
+        // Guard against non-string types (array, bool, int, object) that a
+        // malicious or buggy client could send. PHP would throw a TypeError
+        // before we ever reach the format check; convert it to a named
+        // InvalidArgumentException instead.
+        if ($value !== null && ! is_string($value)) {
+            throw new \InvalidArgumentException(
+                "Invalid {$field}: must be a YYYY-MM-DD string, got " . gettype($value) . '.'
+            );
+        }
+
+        if ($value === null || $value === '') {
+            if ($required) {
+                // Fall back to today when payment_date is omitted (matches old behaviour)
+                return now()->toDateString();
+            }
+            return null;
+        }
+
+        // DateTime::createFromFormat is strict: it rejects relative words and
+        // garbage strings that Carbon::parse() would otherwise accept.
+        $parsed = \DateTime::createFromFormat('Y-m-d', $value);
+
+        if (! $parsed || $parsed->format('Y-m-d') !== $value) {
+            throw new \InvalidArgumentException(
+                "Invalid {$field}: expected YYYY-MM-DD format, got \"{$value}\"."
+            );
+        }
+
+        return $value;
+    }
+}
