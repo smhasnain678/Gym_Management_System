@@ -234,19 +234,14 @@ class OfflineSyncController extends Controller
 
     private function handleFeePaymentCreate(array $data): FeePayment
     {
-        $allowed = [
-            'member_id', 'member_membership_id', 'amount_paid',
-            'payment_date', 'due_date', 'payment_method',
-            'receipt_number', 'notes',
-        ];
-
-        $filtered = array_intersect_key($data, array_flip($allowed));
-
-        if (empty($filtered['member_id']) || empty($filtered['member_membership_id']) || empty($filtered['amount_paid'])) {
-            throw new \InvalidArgumentException('fee_payment_create requires member_id, member_membership_id, and amount_paid.');
+        if (empty($data['member_membership_id'])) {
+            throw new \InvalidArgumentException('fee_payment_create requires member_membership_id.');
         }
 
-        return FeePayment::create($filtered);
+        return app(\App\Services\FeePaymentService::class)->recordPayment(
+            (int) $data['member_membership_id'],
+            $data
+        );
     }
 
     // ─────────────────────────────────────────────────────────────────

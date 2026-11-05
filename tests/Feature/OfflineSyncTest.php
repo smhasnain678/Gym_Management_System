@@ -313,6 +313,874 @@ class OfflineSyncTest extends TestCase
         ]);
     }
 
+    public function test_sync_fee_payment_updates_membership_paid_and_remaining_amounts(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Fee Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(1, $body['synced']);
+        $this->assertEquals(0, $body['failed']);
+
+        $membership->refresh();
+        $this->assertEquals(1000, (float) $membership->paid_amount);
+        $this->assertEquals(2000, (float) $membership->remaining_amount);
+    }
+
+    public function test_sync_fee_payment_rejects_overpayment_with_structured_error(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Fee Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 2000,
+            'remaining_amount'   => 1000,
+            'status'             => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1500, // Exceeds remaining 1000
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsString('exceeds the remaining balance', $body['results'][0]['message']);
+
+        $this->assertDatabaseMissing('fee_payments', [
+            'member_membership_id' => $membership->id,
+            'amount_paid'          => 1500,
+        ]);
+        $this->assertEquals(1000, (float) $membership->fresh()->remaining_amount);
+    }
+
+    public function test_sync_fee_payment_fails_when_membership_not_found(): void
+    {
+        $user = $this->createOwner();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => 1,
+                        'member_membership_id' => 999999,
+                        'amount_paid'          => 500,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsString('membership', strtolower($body['results'][0]['message']));
+    }
+
+    public function test_sync_fee_payment_accepts_repeated_identical_payloads_without_dedup_in_v1(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Fee Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        $paymentAction = [
+            'type' => 'fee_payment_create',
+            'data' => [
+                'member_id'            => $member->id,
+                'member_membership_id' => $membership->id,
+                'amount_paid'          => 1000,
+                'payment_date'         => now()->toDateString(),
+                'payment_method'       => 'cash',
+            ],
+        ];
+
+        // Sending two identical payment actions in the same batch
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                $paymentAction,
+                $paymentAction,
+            ],
+        ]);
+
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(2, $body['synced']);
+        $this->assertEquals(0, $body['failed']);
+
+        // In V1, both identical payments are processed (dedup is planned for v2.0 via mutation_id)
+        $this->assertCount(2, FeePayment::where('member_membership_id', $membership->id)->get());
+        $membership->refresh();
+        $this->assertEquals(2000, (float) $membership->paid_amount);
+        $this->assertEquals(1000, (float) $membership->remaining_amount);
+    }
+
+    public function test_sync_fee_payment_rejects_negative_or_zero_amount(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Fee Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        // Zero payment
+        $responseZero = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 0,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+        $responseZero->assertStatus(422);
+
+        // Negative payment
+        $responseNeg = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => -100,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+        $responseNeg->assertStatus(422);
+
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_soft_deleted_member_membership(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Soft Deleted Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        // Soft delete the member
+        $member->delete();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsString('member', strtolower($body['results'][0]['message']));
+
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_ignores_client_supplied_receipt_number(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Fee Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                        'receipt_number'       => 'CLIENT-FORGED-REC-999',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+        $payment = FeePayment::where('member_membership_id', $membership->id)->first();
+        $this->assertNotNull($payment);
+        $this->assertNull($payment->receipt_number);
+    }
+
+    public function test_sync_fee_payment_creates_activity_log(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Log Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+        $payment = FeePayment::where('member_membership_id', $membership->id)->first();
+
+        $this->assertDatabaseHas('activity_logs', [
+            'user_id'      => $user->id,
+            'action'       => 'Fee Received',
+            'subject_type' => FeePayment::class,
+            'subject_id'   => $payment->id,
+        ]);
+    }
+
+    public function test_sync_batch_continues_when_fee_payment_fails_and_rolls_back_failed_action(): void
+    {
+        $user   = $this->createOwner();
+        $plan   = MembershipPlan::create(['name' => 'Monthly', 'duration_days' => 30, 'price' => 3000]);
+        $member = Member::create([
+            'name'         => 'Batch Member',
+            'phone'        => '03003333333',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 3000,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 3000,
+            'status'             => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                // Action 0: Overpayment (fails)
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 5000, // exceeds 3000
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+                // Action 1: Valid member create (succeeds)
+                [
+                    'type' => 'member_create',
+                    'data' => [
+                        'name'         => 'Second Batch Member',
+                        'phone'        => '03007777777',
+                        'gender'       => 'female',
+                        'joining_date' => now()->toDateString(),
+                        'status'       => 'active',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Mixed batch: 1 synced, 1 failed → returns 200
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(1, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertEquals('success', $body['results'][1]['status']);
+
+        // Failed action rolled back
+        $this->assertDatabaseMissing('fee_payments', [
+            'member_membership_id' => $membership->id,
+            'amount_paid'          => 5000,
+        ]);
+        $this->assertEquals(0, (float) $membership->fresh()->paid_amount);
+        $this->assertEquals(3000, (float) $membership->fresh()->remaining_amount);
+
+        // Successful action persisted
+        $this->assertDatabaseHas('members', ['name' => 'Second Batch Member']);
+    }
+
+    // ─── Date validation ──────────────────────────────────────────────────────
+
+    /** Helper: create a standard membership for date-validation tests. */
+    private function makeMembershipForDateTests(int $totalAmount = 5000): array
+    {
+        $plan = MembershipPlan::create(['name' => 'Date-Test Plan', 'duration_days' => 30, 'price' => $totalAmount]);
+        $member = Member::create([
+            'name'         => 'Date Test Member',
+            'phone'        => '03001112222',
+            'gender'       => 'male',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => $totalAmount,
+            'paid_amount'        => 0,
+            'remaining_amount'   => $totalAmount,
+            'status'             => 'active',
+        ]);
+        return [$member, $membership];
+    }
+
+    public function test_sync_fee_payment_rejects_invalid_payment_date_string(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => 'not-a-date',
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Single failing action → 422 (all-failed rule)
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+
+        // No fee_payment row created
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_relative_word_as_payment_date(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => 'tomorrow',
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_invalid_due_date_string(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'due_date'             => 'not-a-date',
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('due_date', $body['results'][0]['message']);
+
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_invalid_payment_date_and_batch_continues(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                // Action 0: bad date (fails)
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => 'not-a-date',
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+                // Action 1: valid member create (must succeed)
+                [
+                    'type' => 'member_create',
+                    'data' => [
+                        'name'         => 'Date Batch Survivor',
+                        'phone'        => '03009998877',
+                        'gender'       => 'male',
+                        'joining_date' => now()->toDateString(),
+                        'status'       => 'active',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Mixed → 200
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(1, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error',   $body['results'][0]['status']);
+        $this->assertEquals('success', $body['results'][1]['status']);
+
+        // Failed action rolled back
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+        $this->assertEquals(0,     (float) $membership->fresh()->paid_amount);
+        $this->assertEquals(5000,  (float) $membership->fresh()->remaining_amount);
+
+        // Successor persisted
+        $this->assertDatabaseHas('members', ['name' => 'Date Batch Survivor']);
+    }
+
+    public function test_sync_fee_payment_accepts_exact_remaining_amount_with_decimals(): void
+    {
+        $user = $this->createOwner();
+        $plan = MembershipPlan::create(['name' => 'Decimal Plan', 'duration_days' => 30, 'price' => 100.30]);
+        $member = Member::create([
+            'name'         => 'Decimal Member',
+            'phone'        => '03001234321',
+            'gender'       => 'female',
+            'joining_date' => now()->toDateString(),
+            'status'       => 'active',
+        ]);
+        $membership = MemberMembership::create([
+            'member_id'          => $member->id,
+            'membership_plan_id' => $plan->id,
+            'start_date'         => now()->toDateString(),
+            'end_date'           => now()->addDays(30)->toDateString(),
+            'total_amount'       => 100.30,
+            'paid_amount'        => 0,
+            'remaining_amount'   => 100.30,
+            'status'             => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 100.30,     // exactly equals remaining
+                        'payment_date'         => now()->toDateString(),
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(1, $body['synced']);
+        $this->assertEquals(0, $body['failed']);
+
+        $fresh = $membership->fresh();
+        $this->assertEquals(100.30, round((float) $fresh->paid_amount, 2));
+        $this->assertEquals(0.00,   round((float) $fresh->remaining_amount, 2));
+
+        // Payment row created correctly
+        $this->assertDatabaseHas('fee_payments', [
+            'member_membership_id' => $membership->id,
+            'amount_paid'          => 100.30,
+        ]);
+    }
+
+    // ─── Non-string date type safety (TypeError guard) ────────────────────────
+
+    public function test_sync_fee_payment_rejects_array_as_payment_date(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => ['2026-11-04'], // array instead of string
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_boolean_as_payment_date(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => true, // boolean instead of string
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_array_as_due_date(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'due_date'             => ['2026-12-04'], // array instead of string
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('due_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    // ─── Impossible calendar dates (overflow) ─────────────────────────────────
+
+    public function test_sync_fee_payment_rejects_overflowed_payment_date_feb31(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => '2026-02-31', // February has at most 28/29 days
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Single failing action → 422 (all-failed rule)
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_invalid_month_in_payment_date(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => '2026-13-01', // month 13 does not exist
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_overflowed_due_date_feb30(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'due_date'             => '2026-02-30', // February never has 30 days
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+                // Second action: valid member_create — batch must continue
+                [
+                    'type' => 'member_create',
+                    'data' => [
+                        'name'         => 'Overflow Batch Survivor',
+                        'phone'        => '03006665544',
+                        'gender'       => 'male',
+                        'joining_date' => now()->toDateString(),
+                        'status'       => 'active',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Mixed batch → 200
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(1, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error',   $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('due_date', $body['results'][0]['message']);
+        $this->assertEquals('success', $body['results'][1]['status']);
+
+        // Failed action rolled back
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+        // Successful action persisted
+        $this->assertDatabaseHas('members', ['name' => 'Overflow Batch Survivor']);
+    }
+
     // ─── Unknown action type ───────────────────────────────────────────────────
 
     public function test_sync_handles_unknown_action_type_gracefully(): void
