@@ -1073,6 +1073,114 @@ class OfflineSyncTest extends TestCase
         $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
     }
 
+    // ─── Impossible calendar dates (overflow) ─────────────────────────────────
+
+    public function test_sync_fee_payment_rejects_overflowed_payment_date_feb31(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => '2026-02-31', // February has at most 28/29 days
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Single failing action → 422 (all-failed rule)
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_invalid_month_in_payment_date(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => '2026-13-01', // month 13 does not exist
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $body = $response->json();
+        $this->assertEquals(0, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error', $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('payment_date', $body['results'][0]['message']);
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+    }
+
+    public function test_sync_fee_payment_rejects_overflowed_due_date_feb30(): void
+    {
+        $user = $this->createOwner();
+        [$member, $membership] = $this->makeMembershipForDateTests();
+
+        $response = $this->actingAs($user)->postJson(route('api.offline.sync'), [
+            'actions' => [
+                [
+                    'type' => 'fee_payment_create',
+                    'data' => [
+                        'member_id'            => $member->id,
+                        'member_membership_id' => $membership->id,
+                        'amount_paid'          => 1000,
+                        'payment_date'         => now()->toDateString(),
+                        'due_date'             => '2026-02-30', // February never has 30 days
+                        'payment_method'       => 'cash',
+                    ],
+                ],
+                // Second action: valid member_create — batch must continue
+                [
+                    'type' => 'member_create',
+                    'data' => [
+                        'name'         => 'Overflow Batch Survivor',
+                        'phone'        => '03006665544',
+                        'gender'       => 'male',
+                        'joining_date' => now()->toDateString(),
+                        'status'       => 'active',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Mixed batch → 200
+        $response->assertOk();
+        $body = $response->json();
+        $this->assertEquals(1, $body['synced']);
+        $this->assertEquals(1, $body['failed']);
+        $this->assertEquals('error',   $body['results'][0]['status']);
+        $this->assertStringContainsStringIgnoringCase('due_date', $body['results'][0]['message']);
+        $this->assertEquals('success', $body['results'][1]['status']);
+
+        // Failed action rolled back
+        $this->assertDatabaseMissing('fee_payments', ['member_membership_id' => $membership->id]);
+        // Successful action persisted
+        $this->assertDatabaseHas('members', ['name' => 'Overflow Batch Survivor']);
+    }
+
     // ─── Unknown action type ───────────────────────────────────────────────────
 
     public function test_sync_handles_unknown_action_type_gracefully(): void

@@ -147,9 +147,16 @@ class FeePaymentService
 
         // DateTime::createFromFormat is strict: it rejects relative words and
         // garbage strings that Carbon::parse() would otherwise accept.
+        // We also check getLastErrors() for warnings (e.g. overflowed dates like
+        // '2026-02-31') because PHP silently rolls them over when only using
+        // format('Y-m-d') !== $value is not enough on all PHP versions/configs.
         $parsed = \DateTime::createFromFormat('Y-m-d', $value);
+        $errors = \DateTime::getLastErrors();
 
-        if (! $parsed || $parsed->format('Y-m-d') !== $value) {
+        $hasWarnings = ! empty($errors['warnings']);
+        $hasErrors   = ! empty($errors['errors']);
+
+        if (! $parsed || $hasWarnings || $hasErrors || $parsed->format('Y-m-d') !== $value) {
             throw new \InvalidArgumentException(
                 "Invalid {$field}: expected YYYY-MM-DD format, got \"{$value}\"."
             );
